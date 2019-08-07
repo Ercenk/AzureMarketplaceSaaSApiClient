@@ -2,6 +2,7 @@
 {
     public enum OperationStatusEnum
     {
+        NotStarted,
         InProgress,
         Failed,
         Succeeded,

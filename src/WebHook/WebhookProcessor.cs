@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
 using Newtonsoft.Json;
 using SaaSFulfillmentClient;
@@ -22,17 +23,29 @@ namespace SaaSFulfillmentClient.WebHook
 
         private readonly IWebhookHandler webhookHandler;
 
+        public WebhookProcessor(IOptionsMonitor<SecuredFulfillmentClientConfiguration> options,
+                                ICredentialProvider credentialProvider,
+                                IFulfillmentClient fulfillmentClient,
+                                IWebhookHandler webhookHandler,
+                                ILogger<WebhookProcessor> logger) : this(options.CurrentValue,
+                                                                         credentialProvider,
+                                                                         fulfillmentClient,
+                                                                         AdApplicationHelper.GetApplication,
+                                                                         webhookHandler,
+                                                                         logger)
+        {
+        }
+
         public WebhookProcessor(SecuredFulfillmentClientConfiguration options,
             ICredentialProvider credentialProvider,
             IFulfillmentClient fulfillmentClient,
             IWebhookHandler webhookHandler,
-            ILogger<WebhookProcessor> logger) : this(
-            options,
-            credentialProvider,
-            fulfillmentClient,
-            AdApplicationHelper.GetApplication,
-            webhookHandler,
-            logger)
+            ILogger<WebhookProcessor> logger) : this(options,
+                                                     credentialProvider,
+                                                     fulfillmentClient,
+                                                     AdApplicationHelper.GetApplication,
+                                                     webhookHandler,
+                                                     logger)
         {
         }
 
