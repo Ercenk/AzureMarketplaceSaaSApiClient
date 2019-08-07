@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using Newtonsoft.Json;
 
 namespace SaaSFulfillmentClient.Models
@@ -36,7 +35,7 @@ namespace SaaSFulfillmentClient.Models
         public Guid TenantId { get; set; }
     }
 
-    public class Subscription : FullfilmentRequestResult
+    public class Subscription : FulfillmentRequestResult
     {
         public IEnumerable<AllowedCustomerOperationEnum> AllowedCustomerOperations { get; set; }
         public Beneficiary Beneficiary { get; set; }
@@ -57,7 +56,6 @@ namespace SaaSFulfillmentClient.Models
 
         public SessionModeEnum SessionMode { get; set; }
 
-        [JsonProperty("id")]
-        public Guid SubscriptionId { get; set; }
+        [JsonProperty("id")] public Guid SubscriptionId { get; set; }
     }
 }

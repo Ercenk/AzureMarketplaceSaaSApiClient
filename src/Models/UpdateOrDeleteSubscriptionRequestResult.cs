@@ -4,7 +4,7 @@ using System.Net.Http.Headers;
 
 namespace SaaSFulfillmentClient.Models
 {
-    public class UpdateOrDeleteSubscriptionRequestResult : FullfilmentRequestResult
+    public class UpdateOrDeleteSubscriptionRequestResult : FulfillmentRequestResult
     {
         private const string OperationLocationKey = "Operation-Location";
         private const string RetryAfterKey = "Retry-After";
@@ -31,6 +31,7 @@ namespace SaaSFulfillmentClient.Models
                 {
                     throw new ApplicationException("API did not return a retry-after value");
                 }
+
                 this.RetryAfter = retryAfter;
             }
         }

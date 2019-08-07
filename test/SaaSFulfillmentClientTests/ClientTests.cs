@@ -6,35 +6,54 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
-
 using Microsoft.Extensions.Logging;
-
 using Moq;
 using Moq.Protected;
-
 using Newtonsoft.Json;
 using SaaSFulfillmentClient;
 using SaaSFulfillmentClient.Models;
-
 using Xunit;
 
 namespace SaaSFulfillmentClientTests
 {
     public class ClientTests
     {
+        public ClientTests()
+        {
+            this.mockHttpMessageHandler = new Mock<HttpMessageHandler>();
+            this.loggerMock = new Mock<ILogger<FulfillmentClient>>();
+            var configuration = new FulfillmentClientConfiguration {BaseUri = MockUri, ApiVersion = MockApiVersion};
+
+            this.client =
+                new FulfillmentClient(this.mockHttpMessageHandler.Object, configuration, this.loggerMock.Object);
+        }
+
         private const string MockApiVersion = "2018-09-15";
         private const string MockUri = "https://marketplaceapi.microsoft.com/api/saas";
         private readonly FulfillmentClient client;
         private readonly Mock<ILogger<FulfillmentClient>> loggerMock;
         private readonly Mock<HttpMessageHandler> mockHttpMessageHandler;
 
-        public ClientTests()
+        private static IEnumerable<Subscription> GenerateSubscriptions(int numberOfSubscriptions)
         {
-            this.mockHttpMessageHandler = new Mock<HttpMessageHandler>();
-            this.loggerMock = new Mock<ILogger<FulfillmentClient>>();
-            var configuration = new FulfillmentClientConfiguration { BaseUri = MockUri, ApiVersion = MockApiVersion };
-
-            this.client = new FulfillmentClient(this.mockHttpMessageHandler.Object, configuration, this.loggerMock.Object);
+            return
+                Enumerable.Range(0, numberOfSubscriptions).Select(r => new Subscription
+                {
+                    SubscriptionId = Guid.NewGuid(),
+                    Name = $"subscription{r}",
+                    OfferId = $"offer{r}",
+                    PlanId = $"silver{r}",
+                    Quantity = 10 + r,
+                    Beneficiary = new Beneficiary {TenantId = Guid.NewGuid()},
+                    Purchaser = new Purchaser {TenantId = Guid.NewGuid()},
+                    AllowedCustomerOperations = new List<AllowedCustomerOperationEnum>
+                    {
+                        //Enum.GetValues(typeof(AllowedCustomerOperationEnum))
+                        AllowedCustomerOperationEnum.Read, AllowedCustomerOperationEnum.Update
+                    },
+                    SessionMode = SessionModeEnum.None,
+                    SaasSubscriptionStatus = StatusEnum.Provisioning
+                }).ToList();
         }
 
         [Fact]
@@ -46,12 +65,13 @@ namespace SaaSFulfillmentClientTests
             this.mockHttpMessageHandler.Protected()
                 .Setup<Task<HttpResponseMessage>>("SendAsync",
                     ItExpr.Is<HttpRequestMessage>(r =>
-                        r.RequestUri.AbsoluteUri.Contains("https://marketplaceapi.microsoft.com/api/saas/subscriptions")),
+                        r.RequestUri.AbsoluteUri.Contains(
+                            "https://marketplaceapi.microsoft.com/api/saas/subscriptions")),
                     ItExpr.IsAny<CancellationToken>())
                 .ReturnsAsync(new HttpResponseMessage
                 {
                     StatusCode = HttpStatusCode.OK,
-                    Content = new StringContent(JsonConvert.SerializeObject(ClientTests.GenerateSubscriptions(10)))
+                    Content = new StringContent(JsonConvert.SerializeObject(GenerateSubscriptions(10)))
                 })
                 .Callback<HttpRequestMessage, CancellationToken>((r, c) =>
                 {
@@ -100,12 +120,12 @@ namespace SaaSFulfillmentClientTests
             this.mockHttpMessageHandler.Protected()
                 .Setup<Task<HttpResponseMessage>>("SendAsync",
                     ItExpr.Is<HttpRequestMessage>(r =>
-                        r.RequestUri.AbsoluteUri.Contains("https://marketplaceapi.microsoft.com/api/saas/subscriptions")),
+                        r.RequestUri.AbsoluteUri.Contains(
+                            "https://marketplaceapi.microsoft.com/api/saas/subscriptions")),
                     ItExpr.IsAny<CancellationToken>())
                 .ReturnsAsync(new HttpResponseMessage
                 {
-                    StatusCode = HttpStatusCode.InternalServerError,
-                    Content = new StringContent(errorMessage)
+                    StatusCode = HttpStatusCode.InternalServerError, Content = new StringContent(errorMessage)
                 }).Callback<HttpRequestMessage, CancellationToken>((r, c) =>
                 {
                     var queryParameters = HttpUtility.ParseQueryString(r.RequestUri.Query);
@@ -138,28 +158,6 @@ namespace SaaSFulfillmentClientTests
             {
                 Assert.Contains("Received response", exception.Message);
             }
-        }
-
-        private static IEnumerable<Subscription> GenerateSubscriptions(int numberOfSubscriptions)
-        {
-            return
-              Enumerable.Range(0, numberOfSubscriptions).Select(r => new Subscription
-              {
-                  SubscriptionId = Guid.NewGuid(),
-                  Name = $"subscription{r}",
-                  OfferId = $"offer{r}",
-                  PlanId = $"silver{r}",
-                  Quantity = 10 + r,
-                  Beneficiary = new Beneficiary { TenantId = Guid.NewGuid() },
-                  Purchaser = new Purchaser { TenantId = Guid.NewGuid() },
-                  AllowedCustomerOperations = new List<AllowedCustomerOperationEnum>
-                        {
-                            //Enum.GetValues(typeof(AllowedCustomerOperationEnum))
-                            AllowedCustomerOperationEnum.Read, AllowedCustomerOperationEnum.Update
-                        },
-                  SessionMode = SessionModeEnum.None,
-                  SaasSubscriptionStatus = StatusEnum.Provisioning
-              }).ToList();
         }
     }
 }

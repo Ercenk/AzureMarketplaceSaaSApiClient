@@ -9,7 +9,7 @@ namespace SaaSFulfillmentClient.Models
         public string PlanId { get; set; }
     }
 
-    public class SubscriptionPlans : FullfilmentRequestResult
+    public class SubscriptionPlans : FulfillmentRequestResult
     {
         public IEnumerable<Plan> Plans { get; set; }
     }

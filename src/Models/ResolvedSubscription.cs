@@ -1,10 +1,9 @@
 ﻿using System;
-
 using Newtonsoft.Json;
 
 namespace SaaSFulfillmentClient.Models
 {
-    public class ResolvedSubscription : FullfilmentRequestResult
+    public class ResolvedSubscription : FulfillmentRequestResult
     {
         public string OfferId { get; set; }
 
@@ -14,8 +13,7 @@ namespace SaaSFulfillmentClient.Models
 
         public int Quantity { get; set; }
 
-        [JsonProperty("id")]
-        public Guid SubscriptionId { get; set; }
+        [JsonProperty("id")] public Guid SubscriptionId { get; set; }
 
         public string SubscriptionName { get; set; }
     }

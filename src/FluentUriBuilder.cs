@@ -30,7 +30,7 @@ namespace SaaSFulfillmentClient
 
         public FluentUriBuilder AddQuery(string queryParameterName, string queryParameter)
         {
-            var charsToRemove = new[] { '&', '?', '=' };
+            var charsToRemove = new[] {'&', '?', '='};
 
             var cleanParameterName = queryParameterName.Trim(charsToRemove);
             var cleanParameter = queryParameter.Trim(charsToRemove);

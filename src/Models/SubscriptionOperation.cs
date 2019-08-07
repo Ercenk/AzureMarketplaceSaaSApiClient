@@ -2,7 +2,7 @@
 
 namespace SaaSFulfillmentClient.Models
 {
-    public class SubscriptionOperation : FullfilmentRequestResult
+    public class SubscriptionOperation : FulfillmentRequestResult
     {
         public string Action { get; set; }
         public Guid ActivityId { get; set; }
