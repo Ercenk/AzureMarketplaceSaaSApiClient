@@ -24,7 +24,7 @@ namespace SaaSFulfillmentClient.AzureAD
 
         public static async Task<string> GetBearerToken(IConfidentialClientApplication adApplication)
         {
-            var scopes = new[] { "https://graph.microsoft.com/.default" };
+            var scopes = new[] {"https://graph.microsoft.com/.default"};
             return $"Bearer {(await adApplication.AcquireTokenForClient(scopes).ExecuteAsync()).AccessToken}";
         }
     }

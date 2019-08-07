@@ -14,11 +14,6 @@ namespace SaaSFulfillmentClientTests
 {
     public class MockApiTests
     {
-        private const string MockApiVersion = "2018-09-15";
-        private const string MockUri = "https://marketplaceapi.microsoft.com/api/saas";
-        private readonly FulfillmentClient client;
-        private readonly Mock<ILogger<FulfillmentClient>> loggerMock;
-
         public MockApiTests()
         {
             var builder = new ConfigurationBuilder();
@@ -28,7 +23,8 @@ namespace SaaSFulfillmentClientTests
             this.loggerMock = new Mock<ILogger<FulfillmentClient>>();
             var options = new SecuredFulfillmentClientConfiguration
             {
-                FulfillmentService = new FulfillmentClientConfiguration { BaseUri = MockUri, ApiVersion = MockApiVersion },
+                FulfillmentService =
+                    new FulfillmentClientConfiguration {BaseUri = MockUri, ApiVersion = MockApiVersion},
                 AzureActiveDirectory = new AuthenticationConfiguration
                 {
                     ClientId = "84aca647-1340-454b-923c-a21a9003b28e",
@@ -40,6 +36,11 @@ namespace SaaSFulfillmentClientTests
 
             this.client = new FulfillmentClient(options, credentialProvider, this.loggerMock.Object);
         }
+
+        private const string MockApiVersion = "2018-09-15";
+        private const string MockUri = "https://marketplaceapi.microsoft.com/api/saas";
+        private readonly FulfillmentClient client;
+        private readonly Mock<ILogger<FulfillmentClient>> loggerMock;
 
         [Fact]
         public async Task CanActivateSubscription()
@@ -58,7 +59,7 @@ namespace SaaSFulfillmentClientTests
 
             var result = await this.client.ActivateSubscriptionAsync(
                 subscriptions.First().SubscriptionId,
-                new ActivatedSubscription { PlanId = "Gold", Quantity = "" },
+                new ActivatedSubscription {PlanId = "Gold", Quantity = ""},
                 requestId,
                 correlationId,
                 new CancellationTokenSource().Token);
@@ -269,12 +270,12 @@ namespace SaaSFulfillmentClientTests
 
             requestId = Guid.NewGuid();
 
-            var update = new ActivatedSubscription { PlanId = "Gold", Quantity = "" };
+            var update = new ActivatedSubscription {PlanId = "Gold", Quantity = ""};
 
             var result = await this.client.UpdateSubscriptionAsync(
                 subscriptions.First().SubscriptionId,
                 update,
-              requestId,
+                requestId,
                 correlationId,
                 new CancellationTokenSource().Token);
 

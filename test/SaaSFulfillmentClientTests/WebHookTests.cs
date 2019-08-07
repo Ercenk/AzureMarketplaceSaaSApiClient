@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,10 +12,6 @@ namespace SaaSFulfillmentClientTests
 {
     public class MockWebhookHandler : IWebhookHandler
     {
-        public MockWebhookHandler()
-        {
-        }
-
         public async Task ChangePlanAsync(WebhookPayload payload)
         {
             await Task.CompletedTask;
@@ -63,10 +57,6 @@ namespace SaaSFulfillmentClientTests
 
     public class WebHookTests
     {
-        private const string MockApiVersion = "2018-09-15";
-        private const string MockUri = "https://marketplaceapi.microsoft.com/api/saas";
-        private ServiceProvider serviceProvider;
-
         public WebHookTests()
         {
             var configurationDictionary = new Dictionary<string, string>
@@ -84,18 +74,24 @@ namespace SaaSFulfillmentClientTests
             services.AddLogging(builder => builder.AddConsole());
 
             services.AddFulfillmentClient(options => configuration.Bind("FulfillmentClient", options),
-                credentialBuilder => credentialBuilder.WithClientSecretAuthentication(configuration["FulfillmentClient:AzureActiveDirectory:AppKey"]));
+                credentialBuilder =>
+                    credentialBuilder.WithClientSecretAuthentication(
+                        configuration["FulfillmentClient:AzureActiveDirectory:AppKey"]));
             services
-               .AddWebhookProcessor()
-               .WithWebhookHandler<MockWebhookHandler>();
+                .AddWebhookProcessor()
+                .WithWebhookHandler<MockWebhookHandler>();
 
             this.serviceProvider = services.BuildServiceProvider();
         }
 
+        private const string MockApiVersion = "2018-09-15";
+        private const string MockUri = "https://marketplaceapi.microsoft.com/api/saas";
+        private readonly ServiceProvider serviceProvider;
+
         [Fact]
         public async Task CanProcessWebhookRequest()
         {
-            var processor = serviceProvider.GetRequiredService<IWebhookProcessor>();
+            var processor = this.serviceProvider.GetRequiredService<IWebhookProcessor>();
 
             var webHookPayloadJson = @"{
                   ""id"": ""74dfb4db-c193-4891-827d-eb05fbdc64b0"",

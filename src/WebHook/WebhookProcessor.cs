@@ -5,9 +5,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
 using Newtonsoft.Json;
-using SaaSFulfillmentClient;
 using SaaSFulfillmentClient.AzureAD;
-using SaaSFulfillmentClient.Models;
 
 namespace SaaSFulfillmentClient.WebHook
 {
@@ -24,15 +22,15 @@ namespace SaaSFulfillmentClient.WebHook
         private readonly IWebhookHandler webhookHandler;
 
         public WebhookProcessor(IOptionsMonitor<SecuredFulfillmentClientConfiguration> options,
-                                ICredentialProvider credentialProvider,
-                                IFulfillmentClient fulfillmentClient,
-                                IWebhookHandler webhookHandler,
-                                ILogger<WebhookProcessor> logger) : this(options.CurrentValue,
-                                                                         credentialProvider,
-                                                                         fulfillmentClient,
-                                                                         AdApplicationHelper.GetApplication,
-                                                                         webhookHandler,
-                                                                         logger)
+            ICredentialProvider credentialProvider,
+            IFulfillmentClient fulfillmentClient,
+            IWebhookHandler webhookHandler,
+            ILogger<WebhookProcessor> logger) : this(options.CurrentValue,
+            credentialProvider,
+            fulfillmentClient,
+            AdApplicationHelper.GetApplication,
+            webhookHandler,
+            logger)
         {
         }
 
@@ -41,11 +39,11 @@ namespace SaaSFulfillmentClient.WebHook
             IFulfillmentClient fulfillmentClient,
             IWebhookHandler webhookHandler,
             ILogger<WebhookProcessor> logger) : this(options,
-                                                     credentialProvider,
-                                                     fulfillmentClient,
-                                                     AdApplicationHelper.GetApplication,
-                                                     webhookHandler,
-                                                     logger)
+            credentialProvider,
+            fulfillmentClient,
+            AdApplicationHelper.GetApplication,
+            webhookHandler,
+            logger)
         {
         }
 
@@ -53,7 +51,8 @@ namespace SaaSFulfillmentClient.WebHook
             SecuredFulfillmentClientConfiguration options,
             ICredentialProvider credentialProvider,
             IFulfillmentClient fulfillmentClient,
-            Func<SecuredFulfillmentClientConfiguration, ICredentialProvider, IConfidentialClientApplication> adApplicationFactory,
+            Func<SecuredFulfillmentClientConfiguration, ICredentialProvider, IConfidentialClientApplication>
+                adApplicationFactory,
             IWebhookHandler webhookHandler,
             ILogger<WebhookProcessor> logger)
         {
@@ -88,7 +87,8 @@ namespace SaaSFulfillmentClient.WebHook
                 return;
             }
 
-            this.logger.LogInformation($"Received webhook notification with payload, {JsonConvert.SerializeObject(payload)}");
+            this.logger.LogInformation(
+                $"Received webhook notification with payload, {JsonConvert.SerializeObject(payload)}");
 
             switch (payload.Action)
             {
