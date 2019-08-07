@@ -6,7 +6,8 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
-
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 using Moq;
@@ -14,6 +15,7 @@ using Moq.Protected;
 
 using Newtonsoft.Json;
 using SaaSFulfillmentClient;
+using SaaSFulfillmentClient.AzureAD;
 using SaaSFulfillmentClient.Models;
 
 using Xunit;
@@ -30,11 +32,52 @@ namespace SaaSFulfillmentClientTests
 
         public ClientTests()
         {
+            var builder = new ConfigurationBuilder();
+            builder.AddUserSecrets<ClientTests>();
+            var configuration = builder.Build();
+
             this.mockHttpMessageHandler = new Mock<HttpMessageHandler>();
             this.loggerMock = new Mock<ILogger<FulfillmentClient>>();
-            var configuration = new FulfillmentClientConfiguration { BaseUri = MockUri, ApiVersion = MockApiVersion };
+            var options = new SecuredFulfillmentClientConfiguration
+            {
+                FulfillmentService = new FulfillmentClientConfiguration { BaseUri = MockUri, ApiVersion = MockApiVersion },
+                AzureActiveDirectory = new AuthenticationConfiguration
+                {
+                    ClientId = "84aca647-1340-454b-923c-a21a9003b28e",
+                    AppKey = configuration["FulfillmentClient:AzureActiveDirectory:AppKey"]
+                }
+            };
 
-            this.client = new FulfillmentClient(this.mockHttpMessageHandler.Object, configuration, this.loggerMock.Object);
+            var credentialProvider = new ClientSercretCredentialProvider(options.AzureActiveDirectory.AppKey);
+
+            this.client = new FulfillmentClient(this.mockHttpMessageHandler.Object, options, credentialProvider, AdApplicationHelper.GetApplication, this.loggerMock.Object);
+        }
+
+        [Fact]
+        public async Task CanBuildClientAndCall()
+        {
+            var configurationDictionary = new Dictionary<string, string>
+            {
+                {"FulfillmentClient:AzureActiveDirectory:ClientId", "84aca647-1340-454b-923c-a21a9003b28e"},
+                {"FulfillmentClient:FulfillmentService:ApiVersion", MockApiVersion},
+                {"FulfillmentClient:FulfillmentService:BaseUri", MockUri}
+            };
+            var configuration = new ConfigurationBuilder()
+                .AddUserSecrets<ClientTests>()
+                .AddInMemoryCollection(configurationDictionary)
+                .Build();
+
+            var services = new ServiceCollection();
+            services.AddLogging(builder => builder.AddConsole());
+
+            services.AddFulfillmentClient(options => configuration.Bind("FulfillmentClient", options),
+                credentialBuilder => credentialBuilder.WithClientSecretAuthentication(configuration["FulfillmentClient:AzureActiveDirectory:AppKey"]));
+
+            var serviceProvider = services.BuildServiceProvider();
+
+            var client = serviceProvider.GetRequiredService<IFulfillmentClient>();
+
+            await this.CanGetAllSubscriptions();
         }
 
         [Fact]
@@ -76,7 +119,6 @@ namespace SaaSFulfillmentClientTests
             var result = await this.client.GetSubscriptionsAsync(
                 requestId,
                 correlationId,
-                "authtoken",
                 new CancellationTokenSource().Token);
 
             Assert.IsAssignableFrom<IEnumerable<Subscription>>(result);
@@ -131,7 +173,6 @@ namespace SaaSFulfillmentClientTests
                 var result = await this.client.GetSubscriptionsAsync(
                     requestId,
                     correlationId,
-                    "authtoken",
                     new CancellationTokenSource().Token);
             }
             catch (ApplicationException exception)

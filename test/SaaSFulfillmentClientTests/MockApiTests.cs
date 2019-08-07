@@ -2,10 +2,11 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
 using SaaSFulfillmentClient;
+using SaaSFulfillmentClient.AzureAD;
 using SaaSFulfillmentClient.Models;
 using Xunit;
 
@@ -20,10 +21,24 @@ namespace SaaSFulfillmentClientTests
 
         public MockApiTests()
         {
-            this.loggerMock = new Mock<ILogger<FulfillmentClient>>();
-            var configuration = new FulfillmentClientConfiguration { BaseUri = MockUri, ApiVersion = MockApiVersion };
+            var builder = new ConfigurationBuilder();
+            builder.AddUserSecrets<ClientTests>();
+            var configuration = builder.Build();
 
-            this.client = new FulfillmentClient(configuration, this.loggerMock.Object);
+            this.loggerMock = new Mock<ILogger<FulfillmentClient>>();
+            var options = new SecuredFulfillmentClientConfiguration
+            {
+                FulfillmentService = new FulfillmentClientConfiguration { BaseUri = MockUri, ApiVersion = MockApiVersion },
+                AzureActiveDirectory = new AuthenticationConfiguration
+                {
+                    ClientId = "84aca647-1340-454b-923c-a21a9003b28e",
+                    AppKey = configuration["FulfillmentClient:AzureActiveDirectory:AppKey"]
+                }
+            };
+
+            var credentialProvider = new ClientSercretCredentialProvider(options.AzureActiveDirectory.AppKey);
+
+            this.client = new FulfillmentClient(options, credentialProvider, this.loggerMock.Object);
         }
 
         [Fact]
@@ -35,7 +50,6 @@ namespace SaaSFulfillmentClientTests
             var subscriptions = await this.client.GetSubscriptionsAsync(
                 requestId,
                 correlationId,
-                string.Empty,
                 new CancellationTokenSource().Token);
 
             Assert.Equal(requestId, subscriptions.First().RequestId);
@@ -47,7 +61,6 @@ namespace SaaSFulfillmentClientTests
                 new ActivatedSubscription { PlanId = "Gold", Quantity = "" },
                 requestId,
                 correlationId,
-                string.Empty,
                 new CancellationTokenSource().Token);
 
             Assert.Equal(requestId, result.RequestId);
@@ -62,7 +75,6 @@ namespace SaaSFulfillmentClientTests
             var subscriptions = await this.client.GetSubscriptionsAsync(
                 requestId,
                 correlationId,
-                string.Empty,
                 new CancellationTokenSource().Token);
 
             Assert.Equal(requestId, subscriptions.First().RequestId);
@@ -73,7 +85,6 @@ namespace SaaSFulfillmentClientTests
                 subscriptions.First().SubscriptionId,
                 requestId,
                 correlationId,
-                string.Empty,
                 new CancellationTokenSource().Token);
 
             Assert.IsType<Guid>(result.RequestId);
@@ -90,7 +101,6 @@ namespace SaaSFulfillmentClientTests
             var subscriptions = await this.client.GetSubscriptionsAsync(
                 requestId,
                 correlationId,
-                string.Empty,
                 new CancellationTokenSource().Token);
 
             Assert.Equal(requestId, subscriptions.First().RequestId);
@@ -100,7 +110,6 @@ namespace SaaSFulfillmentClientTests
             var result = await this.client.GetOperationsAsync(
                 requestId,
                 correlationId,
-                string.Empty,
                 new CancellationTokenSource().Token);
 
             Assert.NotEmpty(result);
@@ -115,7 +124,6 @@ namespace SaaSFulfillmentClientTests
             var subscriptions = await this.client.GetSubscriptionsAsync(
                 requestId,
                 correlationId,
-                string.Empty,
                 new CancellationTokenSource().Token);
 
             Assert.Equal(requestId, subscriptions.First().RequestId);
@@ -126,7 +134,6 @@ namespace SaaSFulfillmentClientTests
                 subscriptions.First().SubscriptionId,
                 requestId,
                 correlationId,
-                string.Empty,
                 new CancellationTokenSource().Token);
 
             Assert.NotNull(result);
@@ -142,7 +149,6 @@ namespace SaaSFulfillmentClientTests
             var subscriptions = await this.client.GetSubscriptionsAsync(
                 requestId,
                 correlationId,
-                string.Empty,
                 new CancellationTokenSource().Token);
 
             Assert.Equal(requestId, subscriptions.First().RequestId);
@@ -153,17 +159,15 @@ namespace SaaSFulfillmentClientTests
                 subscriptions.First().SubscriptionId,
                 requestId,
                 correlationId,
-                string.Empty,
                 new CancellationTokenSource().Token);
 
             Assert.Equal(requestId, operations.First().RequestId);
 
             var operation = await this.client.GetSubscriptionOperationAsync(
                 subscriptions.First().SubscriptionId,
-                operations.First().Id.ToString(),
+                operations.First().Id,
                 requestId,
                 correlationId,
-                string.Empty,
                 new CancellationTokenSource().Token);
 
             Assert.NotNull(operation);
@@ -179,7 +183,6 @@ namespace SaaSFulfillmentClientTests
             var subscriptions = await this.client.GetSubscriptionsAsync(
                 requestId,
                 correlationId,
-                string.Empty,
                 new CancellationTokenSource().Token);
 
             Assert.Equal(requestId, subscriptions.First().RequestId);
@@ -190,7 +193,6 @@ namespace SaaSFulfillmentClientTests
                 subscriptions.First().SubscriptionId,
                 requestId,
                 correlationId,
-                string.Empty,
                 new CancellationTokenSource().Token);
 
             Assert.NotEmpty(result);
@@ -205,7 +207,6 @@ namespace SaaSFulfillmentClientTests
             var subscriptions = await this.client.GetSubscriptionsAsync(
                 requestId,
                 correlationId,
-                string.Empty,
                 new CancellationTokenSource().Token);
 
             Assert.Equal(requestId, subscriptions.First().RequestId);
@@ -216,7 +217,6 @@ namespace SaaSFulfillmentClientTests
                 subscriptions.First().SubscriptionId,
                 requestId,
                 correlationId,
-                string.Empty,
                 new CancellationTokenSource().Token);
 
             Assert.NotEmpty(result.Plans);
@@ -231,7 +231,6 @@ namespace SaaSFulfillmentClientTests
             var subscriptions = await this.client.GetSubscriptionsAsync(
                 requestId,
                 correlationId,
-                string.Empty,
                 new CancellationTokenSource().Token);
 
             Assert.NotEmpty(subscriptions);
@@ -248,7 +247,6 @@ namespace SaaSFulfillmentClientTests
                 "marketplacetoken",
                 requestId,
                 correlationId,
-                string.Empty,
                 new CancellationTokenSource().Token);
             Assert.Equal(requestId, result.RequestId);
 
@@ -265,7 +263,6 @@ namespace SaaSFulfillmentClientTests
             var subscriptions = await this.client.GetSubscriptionsAsync(
                 requestId,
                 correlationId,
-                string.Empty,
                 new CancellationTokenSource().Token);
 
             Assert.Equal(requestId, subscriptions.First().RequestId);
@@ -279,7 +276,6 @@ namespace SaaSFulfillmentClientTests
                 update,
               requestId,
                 correlationId,
-                string.Empty,
                 new CancellationTokenSource().Token);
 
             Assert.NotNull(result.Operation);
