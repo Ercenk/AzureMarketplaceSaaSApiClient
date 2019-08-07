@@ -2,10 +2,10 @@
 {
     public enum OperationStatusEnum
     {
+        NotStarted,
         InProgress,
         Failed,
         Succeeded,
-        Conflict,
-        NotStarted
+        Conflict
     }
 }
