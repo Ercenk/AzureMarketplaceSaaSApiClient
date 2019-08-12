@@ -9,7 +9,7 @@ namespace SaaSFulfillmentClient.AzureAD
         public static IConfidentialClientApplication GetApplication(SecuredFulfillmentClientConfiguration options,
             ICredentialProvider credentialProvider)
         {
-            if (!(credentialProvider is ClientSercretCredentialProvider secretProvider))
+            if (!(credentialProvider is ClientSecretCredentialProvider secretProvider))
             {
                 throw new NotImplementedException(
                     "Current implementation supports AD Applications with client secrets only.");

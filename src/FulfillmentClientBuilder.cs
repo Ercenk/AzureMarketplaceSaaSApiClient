@@ -14,8 +14,6 @@ namespace SaaSFulfillmentClient
             this.services = services;
         }
 
-        public SecuredFulfillmentClientConfiguration Options { get; }
-
         public void WithCertificateAuthentication(StoreLocation storeLocation, StoreName storeName,
             string certificateThumbprint)
         {
@@ -29,7 +27,7 @@ namespace SaaSFulfillmentClient
 
         public void WithClientSecretAuthentication(string clientSecret)
         {
-            this.services.TryAddSingleton<ICredentialProvider>(new ClientSercretCredentialProvider(clientSecret));
+            this.services.TryAddSingleton<ICredentialProvider>(new ClientSecretCredentialProvider(clientSecret));
         }
     }
 }

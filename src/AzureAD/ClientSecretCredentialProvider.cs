@@ -1,8 +1,8 @@
 ﻿namespace SaaSFulfillmentClient.AzureAD
 {
-    public class ClientSercretCredentialProvider : ICredentialProvider
+    public class ClientSecretCredentialProvider : ICredentialProvider
     {
-        public ClientSercretCredentialProvider(string clientSecret)
+        public ClientSecretCredentialProvider(string clientSecret)
         {
             this.ClientSecret = clientSecret;
         }

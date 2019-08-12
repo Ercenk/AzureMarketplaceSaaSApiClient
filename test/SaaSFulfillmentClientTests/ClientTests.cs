@@ -21,6 +21,16 @@ namespace SaaSFulfillmentClientTests
 {
     public class ClientTests
     {
+        private const string MockApiVersion = "2018-09-15";
+
+        private const string MockUri = "https://marketplaceapi.microsoft.com/api/saas";
+
+        private readonly FulfillmentClient client;
+
+        private readonly Mock<ILogger<FulfillmentClient>> loggerMock;
+
+        private readonly Mock<HttpMessageHandler> mockHttpMessageHandler;
+
         public ClientTests()
         {
             var builder = new ConfigurationBuilder();
@@ -32,7 +42,7 @@ namespace SaaSFulfillmentClientTests
             var options = new SecuredFulfillmentClientConfiguration
             {
                 FulfillmentService =
-                    new FulfillmentClientConfiguration {BaseUri = MockUri, ApiVersion = MockApiVersion},
+                    new FulfillmentClientConfiguration { BaseUri = MockUri, ApiVersion = MockApiVersion },
                 AzureActiveDirectory = new AuthenticationConfiguration
                 {
                     ClientId = "84aca647-1340-454b-923c-a21a9003b28e",
@@ -40,38 +50,10 @@ namespace SaaSFulfillmentClientTests
                 }
             };
 
-            var credentialProvider = new ClientSercretCredentialProvider(options.AzureActiveDirectory.AppKey);
+            var credentialProvider = new ClientSecretCredentialProvider(options.AzureActiveDirectory.AppKey);
 
             this.client = new FulfillmentClient(this.mockHttpMessageHandler.Object, options, credentialProvider,
                 AdApplicationHelper.GetApplication, this.loggerMock.Object);
-        }
-
-        private const string MockApiVersion = "2018-09-15";
-        private const string MockUri = "https://marketplaceapi.microsoft.com/api/saas";
-        private readonly FulfillmentClient client;
-        private readonly Mock<ILogger<FulfillmentClient>> loggerMock;
-        private readonly Mock<HttpMessageHandler> mockHttpMessageHandler;
-
-        private static IEnumerable<Subscription> GenerateSubscriptions(int numberOfSubscriptions)
-        {
-            return
-                Enumerable.Range(0, numberOfSubscriptions).Select(r => new Subscription
-                {
-                    SubscriptionId = Guid.NewGuid(),
-                    Name = $"subscription{r}",
-                    OfferId = $"offer{r}",
-                    PlanId = $"silver{r}",
-                    Quantity = 10 + r,
-                    Beneficiary = new Beneficiary {TenantId = Guid.NewGuid()},
-                    Purchaser = new Purchaser {TenantId = Guid.NewGuid()},
-                    AllowedCustomerOperations = new List<AllowedCustomerOperationEnum>
-                    {
-                        //Enum.GetValues(typeof(AllowedCustomerOperationEnum))
-                        AllowedCustomerOperationEnum.Read, AllowedCustomerOperationEnum.Update
-                    },
-                    SessionMode = SessionModeEnum.None,
-                    SaasSubscriptionStatus = StatusEnum.Provisioning
-                }).ToList();
         }
 
         [Fact]
@@ -171,7 +153,8 @@ namespace SaaSFulfillmentClientTests
                     ItExpr.IsAny<CancellationToken>())
                 .ReturnsAsync(new HttpResponseMessage
                 {
-                    StatusCode = HttpStatusCode.InternalServerError, Content = new StringContent(errorMessage)
+                    StatusCode = HttpStatusCode.InternalServerError,
+                    Content = new StringContent(errorMessage)
                 }).Callback<HttpRequestMessage, CancellationToken>((r, c) =>
                 {
                     var queryParameters = HttpUtility.ParseQueryString(r.RequestUri.Query);
@@ -203,6 +186,28 @@ namespace SaaSFulfillmentClientTests
             {
                 Assert.Contains("Received response", exception.Message);
             }
+        }
+
+        private static IEnumerable<Subscription> GenerateSubscriptions(int numberOfSubscriptions)
+        {
+            return
+                Enumerable.Range(0, numberOfSubscriptions).Select(r => new Subscription
+                {
+                    SubscriptionId = Guid.NewGuid(),
+                    Name = $"subscription{r}",
+                    OfferId = $"offer{r}",
+                    PlanId = $"silver{r}",
+                    Quantity = 10 + r,
+                    Beneficiary = new Beneficiary { TenantId = Guid.NewGuid() },
+                    Purchaser = new Purchaser { TenantId = Guid.NewGuid() },
+                    AllowedCustomerOperations = new List<AllowedCustomerOperationEnum>
+                    {
+                        //Enum.GetValues(typeof(AllowedCustomerOperationEnum))
+                        AllowedCustomerOperationEnum.Read, AllowedCustomerOperationEnum.Update
+                    },
+                    SessionMode = SessionModeEnum.None,
+                    SaasSubscriptionStatus = StatusEnum.Provisioning
+                }).ToList();
         }
     }
 }

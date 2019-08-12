@@ -20,7 +20,6 @@ namespace SaaSFulfillmentClient
         private const string DefaultApiVersionParameterName = "api-version";
         private readonly string apiVersion;
         private readonly string baseUri;
-        private readonly ICredentialProvider credentialProvider;
         private readonly HttpMessageHandler httpMessageHandler;
         private readonly ILogger<FulfillmentClient> logger;
 
@@ -55,16 +54,15 @@ namespace SaaSFulfillmentClient
             ILogger<FulfillmentClient> logger)
         {
             this.options = options;
-            this.credentialProvider = credentialProvider;
             this.logger = logger;
-            this.AdApplication = adApplicationFactory(this.options, this.credentialProvider);
+            this.AdApplication = adApplicationFactory(this.options, credentialProvider);
             this.baseUri = options.FulfillmentService.BaseUri;
             this.apiVersion = options.FulfillmentService.ApiVersion;
             this.logger = logger;
             this.httpMessageHandler = httpMessageHandler;
         }
 
-        public IConfidentialClientApplication AdApplication { get; }
+        private readonly IConfidentialClientApplication AdApplication;
 
         public async Task<FulfillmentRequestResult> ActivateSubscriptionAsync(Guid subscriptionId,
             ActivatedSubscription subscriptionDetails, Guid requestId, Guid correlationId,
@@ -366,7 +364,7 @@ namespace SaaSFulfillmentClient
             string bearerToken,
             string content)
         {
-            var request = new HttpRequestMessage {RequestUri = requestUri, Method = method};
+            var request = new HttpRequestMessage { RequestUri = requestUri, Method = method };
 
             request.Headers.Add("x-ms-requestid", requestId.ToString());
             request.Headers.Add("x-ms-correlationid", correlationId.ToString());
