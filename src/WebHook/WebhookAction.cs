@@ -2,9 +2,6 @@
 {
     public enum WebhookAction
     {
-        //(When the resource has been activated)
-        Subscribe,
-
         // (When the resource has been deleted)
         Unsubscribe,
 

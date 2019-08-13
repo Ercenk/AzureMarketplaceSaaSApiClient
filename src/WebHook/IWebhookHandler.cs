@@ -10,8 +10,6 @@ namespace SaaSFulfillmentClient.WebHook
 
         Task ReinstatedAsync(WebhookPayload payload);
 
-        Task SubscribedAsync(WebhookPayload payload);
-
         Task SuspendedAsync(WebhookPayload payload);
 
         Task UnsubscribedAsync(WebhookPayload payload);

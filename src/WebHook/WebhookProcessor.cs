@@ -92,10 +92,6 @@ namespace SaaSFulfillmentClient.WebHook
 
             switch (payload.Action)
             {
-                case WebhookAction.Subscribe:
-                    await this.webhookHandler.SubscribedAsync(payload);
-                    break;
-
                 case WebhookAction.Unsubscribe:
                     await this.webhookHandler.UnsubscribedAsync(payload);
                     break;
