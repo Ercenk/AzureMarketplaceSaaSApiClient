@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <PackageId>AzureMarketplaceSaaSApiClient</PackageId>
-    <Version>2.0.2</Version>
+    <Version>2.0.3</Version>
     <Authors>Ercenk Keresteci</Authors>
     <Product>AzureMarketplaceSaaSApiClient</Product>
     <Description>An experimental .NET client implementation for the Azure Marketplace SaaS Fulfillment API V2 based on the mock API</Description>
@@ -14,7 +14,7 @@
     <RepositoryUrl>https://github.com/Ercenk/AzureMarketplaceSaaSApiClient</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <PackageTags>Azure, Marketplace</PackageTags>
-    <PackageReleaseNotes>Breaking changes with V 2. Please see the documentation</PackageReleaseNotes>
+    <PackageReleaseNotes>Breaking changes with V 2. Please see the documentation. Also refreshed the webhook actions per documentation.</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
