@@ -38,5 +38,8 @@ namespace SaaSFulfillmentClient
 
         Task<UpdateOrDeleteSubscriptionRequestResult> UpdateSubscriptionAsync(Guid subscriptionId,
             ActivatedSubscription update, Guid requestId, Guid correlationId, CancellationToken cancellationToken);
+
+        Task<FulfillmentRequestResult> UpdateSubscriptionOperationAsync(Guid subscriptionId, Guid operationId, OperationUpdate update, Guid requestId,
+                                                                                                          Guid correlationId, CancellationToken cancellationToken);
     }
 }

@@ -356,6 +356,40 @@ namespace SaaSFulfillmentClient
             return await FulfillmentRequestResult.ParseAsync<UpdateOrDeleteSubscriptionRequestResult>(response);
         }
 
+        public async Task<FulfillmentRequestResult> UpdateSubscriptionOperationAsync(
+            Guid subscriptionId,
+            Guid operationId,
+            OperationUpdate update,
+            Guid requestId,
+            Guid correlationId,
+            CancellationToken cancellationToken)
+        {
+            var bearerToken = await AdApplicationHelper.GetBearerToken(this.AdApplication);
+            var requestUrl = FluentUriBuilder
+                .Start(this.baseUri)
+                .AddPath("subscriptions")
+                .AddPath(subscriptionId.ToString())
+                .AddPath("operations")
+                .AddPath(operationId.ToString())
+                .AddQuery(DefaultApiVersionParameterName, this.apiVersion)
+                .Uri;
+
+            requestId = requestId == default ? Guid.NewGuid() : requestId;
+            correlationId = correlationId == default ? Guid.NewGuid() : correlationId;
+
+            var response = await this.SendRequestAndReturnResult(
+                               new HttpMethod("PATCH"),
+                               requestUrl,
+                               requestId,
+                               correlationId,
+                               bearerToken,
+                               null,
+                               JsonConvert.SerializeObject(update),
+                               cancellationToken);
+
+            return await FulfillmentRequestResult.ParseAsync<ResolvedSubscription>(response);
+        }
+
         private static HttpRequestMessage BuildRequest(
             HttpMethod method,
             Uri requestUri,
