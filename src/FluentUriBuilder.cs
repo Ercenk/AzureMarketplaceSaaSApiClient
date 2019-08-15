@@ -23,14 +23,14 @@ namespace SaaSFulfillmentClient
         public FluentUriBuilder AddPath(string path)
         {
             _ = path.Trim('/');
-            this.uriBuilder.Path += $"/{path}";
+            this.uriBuilder.Path += this.uriBuilder.Path == "/" ? $"{path}" : $"/{path}";
 
             return this;
         }
 
         public FluentUriBuilder AddQuery(string queryParameterName, string queryParameter)
         {
-            var charsToRemove = new[] {'&', '?', '='};
+            var charsToRemove = new[] { '&', '?', '=' };
 
             var cleanParameterName = queryParameterName.Trim(charsToRemove);
             var cleanParameter = queryParameter.Trim(charsToRemove);
