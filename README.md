@@ -11,6 +11,18 @@ This client is based on the mock API referenced in the article above.
 
 The client is also available as a Nuget package at https://www.nuget.org/packages/AzureMarketplaceSaaSApiClient/
 
+## Using the library
+
+Register a new AAD application as described in the [documentation](https://docs.microsoft.com/en-us/azure/active-directory/develop/scenario-web-app-call-api-app-registration) and keep the secret. I recommend you to have a separate AAD application for API integration other than the one used in the landing application. This application can be single-tenant.
+
+The library does not implement certificate authentication yet, but I love to see PRs. Please feel free to submit. So generate a key on the portal, and keep it in your favorite secret location, such as [KeyVault](https://docs.microsoft.com/en-us/aspnet/core/security/key-vault-configuration?view=aspnetcore-2.2). I use ```dotnet user-secrets``` for my development.
+
+If you are using dotnet dependency injection, there is an extension method for you. Please see the usage in the [test](https://github.com/Ercenk/AzureMarketplaceSaaSApiClient/blob/master/test/SaaSFulfillmentClientTests/WebHookTests.cs#L76) for registering the types and inject to the classes using those.
+
+### Webhook processing
+
+Implement IWebhookHandler interface to your liking. Then inject to the WebhookProcessor class. The [WebhookProcessor](https://github.com/Ercenk/AzureMarketplaceSaaSApiClient/blob/master/src/WebHook/WebhookProcessor.cs#L77) class takes care of validating the webhook call by the AMP commerce engine, and calls the handler's appropriate methods. Then call the ```ProcessWebhookNotificationAsync``` method in your webhook endpoint code.
+
 ### **Breaking changes for version 2.0.0**
 - Incorporated Azure AD
 - Changed the interface on the client to remove the external bearer token. The client now implements Azure AD authentication.
