@@ -1,0 +1,127 @@
+﻿namespace SaaSFulfillmentClient
+{
+    using System;
+    using System.Net;
+    using System.Net.Http;
+    using System.Net.Http.Headers;
+    using System.Runtime.CompilerServices;
+    using System.Threading;
+    using System.Threading.Tasks;
+
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Identity.Client;
+
+    using SaaSFulfillmentClient.AzureAD;
+
+    public class RestClient<T>
+    {
+        protected const string DefaultApiVersionParameterName = "api-version";
+        protected readonly string apiVersion;
+        protected readonly string baseUri;
+        protected readonly HttpMessageHandler httpMessageHandler;
+        protected readonly ILogger<T> logger;
+        protected readonly IConfidentialClientApplication AdApplication;
+        protected readonly SecuredFulfillmentClientConfiguration options;
+
+        protected RestClient(
+            SecuredFulfillmentClientConfiguration securedFulfillmentClientConfiguration,
+            ILogger<T> instanceLogger,
+            IConfidentialClientApplication adApplication,
+            HttpMessageHandler messageHandler)
+        {
+            this.options = securedFulfillmentClientConfiguration;
+            this.logger = instanceLogger;
+            this.AdApplication = adApplication;
+            this.baseUri = securedFulfillmentClientConfiguration.FulfillmentService.BaseUri;
+            this.apiVersion = securedFulfillmentClientConfiguration.FulfillmentService.ApiVersion;
+            this.httpMessageHandler = messageHandler;
+        }
+
+        private static HttpRequestMessage BuildRequest(
+            HttpMethod method,
+            Uri requestUri,
+            Guid requestId,
+            Guid correlationId,
+            string bearerToken,
+            string content)
+        {
+            var request = new HttpRequestMessage { RequestUri = requestUri, Method = method };
+
+            request.Headers.Add("x-ms-requestid", requestId.ToString());
+            request.Headers.Add("x-ms-correlationid", correlationId.ToString());
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
+
+            if (method == HttpMethod.Post ||
+                method.ToString().ToUpper() == "PATCH")
+            {
+                request.Content = new StringContent(content);
+                request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            }
+
+            return request;
+        }
+
+        private string BuildReceivedLogMessage(
+            Guid requestId,
+            Guid correlationId,
+            HttpStatusCode responseStatusCode,
+            string result,
+            string caller)
+        {
+            return
+                $"Received response {caller}: requestId: {requestId} correlationId: {correlationId}. Status: {responseStatusCode}. Response content: {result}";
+        }
+
+        private string BuildSendLogMessage(Guid requestId, Guid correlationId, string caller)
+        {
+            return $"Sending request {caller}: requestId: {requestId} correlationId: {correlationId}";
+        }
+
+        private HttpClient GetHttpClient()
+        {
+            return this.httpMessageHandler == null ? new HttpClient() : new HttpClient(this.httpMessageHandler);
+        }
+
+#pragma warning disable CA1068 // CancellationToken parameters must come last
+
+        protected async Task<HttpResponseMessage> SendRequestAndReturnResult(
+#pragma warning restore CA1068 // CancellationToken parameters must come last
+            HttpMethod method,
+            Uri requestUri,
+            Guid requestId,
+            Guid correlationId,
+            Action<HttpRequestMessage> customRequestBuilder = null,
+            string content = "",
+            CancellationToken cancellationToken = default,
+            [CallerMemberName] string caller = "")
+        {
+            var bearerToken = await AdApplicationHelper.GetBearerToken(this.AdApplication);
+
+            this.logger.LogInformation(this.BuildSendLogMessage(requestId, correlationId, caller));
+            using (var httpClient = this.GetHttpClient())
+            {
+                var marketplaceApiRequest =
+                    BuildRequest(method, requestUri, requestId, correlationId, bearerToken, content);
+
+                // Give option to modify the request for non-default settings
+                customRequestBuilder?.Invoke(marketplaceApiRequest);
+
+                var response = await httpClient.SendAsync(marketplaceApiRequest, cancellationToken);
+                var result = await response.Content.ReadAsStringAsync();
+                var responseLogMessage = this.BuildReceivedLogMessage(requestId, correlationId, response.StatusCode,
+                    result,
+                    caller);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    this.logger.LogInformation(responseLogMessage);
+
+                    return response;
+                }
+
+                this.logger.LogError(responseLogMessage);
+                throw new ApplicationException(responseLogMessage);
+            }
+        }
+    }
+}

@@ -11,11 +11,11 @@ namespace SaaSFulfillmentClient.Models
     using System.Net;
     using System.Runtime.CompilerServices;
 
-    public class FulfillmentRequestResult
+    public class AzureMarketplaceRequestResult
     {
         private const string RequestIdKey = "x-ms-requestid";
 
-        public FulfillmentRequestResult()
+        public AzureMarketplaceRequestResult()
         {
             this.Success = false;
         }
@@ -25,10 +25,11 @@ namespace SaaSFulfillmentClient.Models
         public Guid RequestId { get; set; }
 
         public HttpStatusCode StatusCode { get; set; }
+
         public bool Success { get; set; }
 
         public static async Task<T> ParseAsync<T>(HttpResponseMessage response)
-            where T : FulfillmentRequestResult, new()
+            where T : AzureMarketplaceRequestResult, new()
         {
             var jsonString = await response.Content.ReadAsStringAsync();
 
@@ -82,5 +83,9 @@ namespace SaaSFulfillmentClient.Models
                 this.RequestId = Guid.Parse(values.First());
             }
         }
+    }
+
+    public class FulfillmentRequestResult : AzureMarketplaceRequestResult
+    {
     }
 }
