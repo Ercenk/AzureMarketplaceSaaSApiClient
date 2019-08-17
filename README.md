@@ -30,7 +30,7 @@ The registration call looks like following in my samples' [startup classes](http
 
 ### Webhook processing
 
-Implement IWebhookHandler interface to your liking. Then inject to the WebhookProcessor class. The [WebhookProcessor](https://github.com/Ercenk/AzureMarketplaceSaaSApiClient/blob/master/src/WebHook/WebhookProcessor.cs#L77) class takes care of validating the webhook call by the AMP commerce engine, and calls the handler's appropriate methods. Then call the ```ProcessWebhookNotificationAsync``` method in your webhook endpoint code.
+Implement IWebhookHandler interface to your liking. 
 
 If you are using dotnet dependency injection, again, I have an extension method. You can register the types with,
 
@@ -38,6 +38,7 @@ If you are using dotnet dependency injection, again, I have an extension method.
             services.AddWebhookProcessor().WithWebhookHandler<ContosoWebhookHandler>();
 ```
 
+The [WebhookProcessor](https://github.com/Ercenk/AzureMarketplaceSaaSApiClient/blob/master/src/WebHook/WebhookProcessor.cs#L77) class takes care of validating the webhook call by the AMP commerce engine, and calls the handler's appropriate methods. Then call the ```ProcessWebhookNotificationAsync``` method in your webhook endpoint code.
 
 ### **Breaking changes for version 2.0.0**
 - Incorporated Azure AD
