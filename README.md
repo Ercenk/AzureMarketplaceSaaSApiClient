@@ -23,9 +23,7 @@ The registration call looks like following in my samples' [startup classes](http
 
 ```csharp
             services.AddFulfillmentClient(
-                options => this.configuration.Bind("FulfillmentClient", options),
-                credentialBuilder => credentialBuilder.WithClientSecretAuthentication(
-                    this.configuration["FulfillmentClient:AzureActiveDirectory:AppKey"]));
+                options => this.configuration.Bind("FulfillmentClient", options));
 ```
 
 ### Webhook processing
@@ -41,9 +39,9 @@ If you are using dotnet dependency injection, again, I have an extension method.
 The [WebhookProcessor](https://github.com/Ercenk/AzureMarketplaceSaaSApiClient/blob/master/src/WebHook/WebhookProcessor.cs#L77) class takes care of validating the webhook call by the AMP commerce engine, and calls the handler's appropriate methods. Then call the ```ProcessWebhookNotificationAsync``` method in your webhook endpoint code.
 
 ### **Breaking changes for version 2.0.0**
-- Incorporated Azure AD
+- Incorporated Azure AD. This time it is using V1 endpoint for acquiring the token with the hardcoded [resource ID](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-registration#get-a-token-based-on-the-azure-ad-app). 
 - Changed the interface on the client to remove the external bearer token. The client now implements Azure AD authentication.
-- Currently only app secret (AppKey) is implemented (no certificate authentication)
+- Removed the credential builder, and simplified the client constructors
 
 ### **New functionality**
 - Added Web Hook processing capability

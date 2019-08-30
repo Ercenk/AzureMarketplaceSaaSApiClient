@@ -9,7 +9,6 @@
     using System.Threading.Tasks;
 
     using Microsoft.Extensions.Logging;
-    using Microsoft.Identity.Client;
 
     using SaaSFulfillmentClient.AzureAD;
 
@@ -20,18 +19,15 @@
         protected readonly string baseUri;
         protected readonly HttpMessageHandler httpMessageHandler;
         protected readonly ILogger<T> logger;
-        protected readonly IConfidentialClientApplication AdApplication;
         protected readonly SecuredFulfillmentClientConfiguration options;
 
         protected RestClient(
             SecuredFulfillmentClientConfiguration securedFulfillmentClientConfiguration,
             ILogger<T> instanceLogger,
-            IConfidentialClientApplication adApplication,
             HttpMessageHandler messageHandler)
         {
             this.options = securedFulfillmentClientConfiguration;
             this.logger = instanceLogger;
-            this.AdApplication = adApplication;
             this.baseUri = securedFulfillmentClientConfiguration.FulfillmentService.BaseUri;
             this.apiVersion = securedFulfillmentClientConfiguration.FulfillmentService.ApiVersion;
             this.httpMessageHandler = messageHandler;
@@ -95,7 +91,7 @@
             CancellationToken cancellationToken = default,
             [CallerMemberName] string caller = "")
         {
-            var bearerToken = await AdApplicationHelper.GetBearerToken(this.AdApplication);
+            var bearerToken = await AdApplicationHelper.GetBearerToken(this.options);
 
             this.logger.LogInformation(this.BuildSendLogMessage(requestId, correlationId, caller));
             using (var httpClient = this.GetHttpClient())

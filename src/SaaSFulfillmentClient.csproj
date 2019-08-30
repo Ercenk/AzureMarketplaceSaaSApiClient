@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <PackageId>AzureMarketplaceSaaSApiClient</PackageId>
-    <Version>2.0.10</Version>
+    <Version>2.0.11</Version>
     <Authors>Ercenk Keresteci</Authors>
     <Product>AzureMarketplaceSaaSApiClient</Product>
     <Description>An experimental .NET client implementation for the Azure Marketplace SaaS Fulfillment API V2 based on the mock API</Description>
@@ -14,15 +14,16 @@
     <RepositoryUrl>https://github.com/Ercenk/AzureMarketplaceSaaSApiClient</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <PackageTags>Azure, Marketplace</PackageTags>
-    <PackageReleaseNotes>Breaking changes with V 2. Please see the documentation. Added custom meters. No mock api for those, thus not tested.</PackageReleaseNotes>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+      <PackageReleaseNotes>Breaking changes for AAD authentication. Modified the AAD authentication to use V1 endpoint and the hardcoded resource id from the marketplace documentation. Reverted to single-tenant implementation for the AAD application.
+SImplified client constructors. They no longer accept a credential builder.</PackageReleaseNotes>
+      <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Identity.Client" Version="4.2.1" />
+    <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="5.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
   </ItemGroup>
 

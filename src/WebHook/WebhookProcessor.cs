@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Identity.Client;
 using Newtonsoft.Json;
 using SaaSFulfillmentClient.AzureAD;
 
@@ -11,7 +10,6 @@ namespace SaaSFulfillmentClient.WebHook
 {
     public class WebhookProcessor : IWebhookProcessor
     {
-        private readonly ICredentialProvider credentialProvider;
 
         private readonly IFulfillmentClient fulfillmentClient;
 
@@ -22,26 +20,10 @@ namespace SaaSFulfillmentClient.WebHook
         private readonly IWebhookHandler webhookHandler;
 
         public WebhookProcessor(IOptionsMonitor<SecuredFulfillmentClientConfiguration> options,
-            ICredentialProvider credentialProvider,
             IFulfillmentClient fulfillmentClient,
             IWebhookHandler webhookHandler,
             ILogger<WebhookProcessor> logger) : this(options.CurrentValue,
-            credentialProvider,
             fulfillmentClient,
-            AdApplicationHelper.GetApplication,
-            webhookHandler,
-            logger)
-        {
-        }
-
-        public WebhookProcessor(SecuredFulfillmentClientConfiguration options,
-            ICredentialProvider credentialProvider,
-            IFulfillmentClient fulfillmentClient,
-            IWebhookHandler webhookHandler,
-            ILogger<WebhookProcessor> logger) : this(options,
-            credentialProvider,
-            fulfillmentClient,
-            AdApplicationHelper.GetApplication,
             webhookHandler,
             logger)
         {
@@ -49,23 +31,16 @@ namespace SaaSFulfillmentClient.WebHook
 
         public WebhookProcessor(
             SecuredFulfillmentClientConfiguration options,
-            ICredentialProvider credentialProvider,
             IFulfillmentClient fulfillmentClient,
-            Func<SecuredFulfillmentClientConfiguration, ICredentialProvider, IConfidentialClientApplication>
-                adApplicationFactory,
             IWebhookHandler webhookHandler,
             ILogger<WebhookProcessor> logger)
         {
             this.options = options;
 
-            this.credentialProvider = credentialProvider;
             this.fulfillmentClient = fulfillmentClient;
             this.logger = logger;
-            this.AdApplication = adApplicationFactory(this.options, this.credentialProvider);
             this.webhookHandler = webhookHandler;
         }
-
-        private IConfidentialClientApplication AdApplication { get; }
 
         public async Task ProcessWebhookNotificationAsync(WebhookPayload payload,
             CancellationToken cancellationToken = default)

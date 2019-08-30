@@ -9,7 +9,6 @@
 
     using Microsoft.Extensions.Logging;
     using Microsoft.Extensions.Options;
-    using Microsoft.Identity.Client;
 
     using Newtonsoft.Json;
 
@@ -19,21 +18,15 @@
     public class CustomMeteringClient : RestClient<CustomMeteringClient>, ICustomMeteringClient
     {
         public CustomMeteringClient(IOptionsMonitor<SecuredFulfillmentClientConfiguration> optionsMonitor,
-                                 ICredentialProvider credentialProvider,
                                  ILogger<CustomMeteringClient> logger) : this(null,
             optionsMonitor.CurrentValue,
-            credentialProvider,
-            AdApplicationHelper.GetApplication,
             logger)
         {
         }
 
         public CustomMeteringClient(SecuredFulfillmentClientConfiguration options,
-                                 ICredentialProvider credentialProvider,
                                  ILogger<CustomMeteringClient> logger) : this(null,
             options,
-            credentialProvider,
-            AdApplicationHelper.GetApplication,
             logger)
         {
         }
@@ -41,10 +34,7 @@
         public CustomMeteringClient(
             HttpMessageHandler httpMessageHandler,
             SecuredFulfillmentClientConfiguration options,
-            ICredentialProvider credentialProvider,
-            Func<SecuredFulfillmentClientConfiguration, ICredentialProvider, IConfidentialClientApplication>
-                adApplicationFactory,
-            ILogger<CustomMeteringClient> logger) : base(options, logger, adApplicationFactory(options, credentialProvider), httpMessageHandler)
+            ILogger<CustomMeteringClient> logger) : base(options, logger, httpMessageHandler)
         {
         }
 

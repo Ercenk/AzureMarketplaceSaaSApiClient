@@ -45,15 +45,13 @@ namespace SaaSFulfillmentClientTests
                     new FulfillmentClientConfiguration { BaseUri = MockUri, ApiVersion = MockApiVersion },
                 AzureActiveDirectory = new AuthenticationConfiguration
                 {
-                    ClientId = "84aca647-1340-454b-923c-a21a9003b28e",
-                    AppKey = configuration["FulfillmentClient:AzureActiveDirectory:AppKey"]
+                    ClientId = Guid.Parse("84aca647-1340-454b-923c-a21a9003b28e"),
+                    AppKey = configuration["FulfillmentClient:AzureActiveDirectory:AppKey"],
+                    TenantId = Guid.Parse(configuration["FulfillmentClient:AzureActiveDirectory:TenantId"])
                 }
             };
 
-            var credentialProvider = new ClientSecretCredentialProvider(options.AzureActiveDirectory.AppKey);
-
-            this.client = new FulfillmentClient(this.mockHttpMessageHandler.Object, options, credentialProvider,
-                AdApplicationHelper.GetApplication, this.loggerMock.Object);
+            this.client = new FulfillmentClient(this.mockHttpMessageHandler.Object, options, this.loggerMock.Object);
         }
 
         [Fact]
@@ -73,10 +71,7 @@ namespace SaaSFulfillmentClientTests
             var services = new ServiceCollection();
             services.AddLogging(builder => builder.AddConsole());
 
-            services.AddFulfillmentClient(options => configuration.Bind("FulfillmentClient", options),
-                credentialBuilder =>
-                    credentialBuilder.WithClientSecretAuthentication(
-                        configuration["FulfillmentClient:AzureActiveDirectory:AppKey"]));
+            services.AddFulfillmentClient(options => configuration.Bind("FulfillmentClient", options));
 
             var serviceProvider = services.BuildServiceProvider();
 

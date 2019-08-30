@@ -9,8 +9,7 @@ namespace SaaSFulfillmentClient
     public static class FulfillmentClientServiceCollectionExtensions
     {
         public static void AddFulfillmentClient(this IServiceCollection services,
-            Action<SecuredFulfillmentClientConfiguration> configureOptions,
-            Action<FulfillmentClientBuilder> credentialBuilder)
+            Action<SecuredFulfillmentClientConfiguration> configureOptions)
         {
             if (services == null)
             {
@@ -26,7 +25,6 @@ namespace SaaSFulfillmentClient
                 .AddOptions<SecuredFulfillmentClientConfiguration>()
                 .Configure(configureOptions);
 
-            credentialBuilder(new FulfillmentClientBuilder(services));
             services.TryAddScoped<IFulfillmentClient, FulfillmentClient>();
         }
 

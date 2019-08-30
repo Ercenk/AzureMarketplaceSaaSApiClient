@@ -73,10 +73,7 @@ namespace SaaSFulfillmentClientTests
             var services = new ServiceCollection();
             services.AddLogging(builder => builder.AddConsole());
 
-            services.AddFulfillmentClient(options => configuration.Bind("FulfillmentClient", options),
-                credentialBuilder =>
-                    credentialBuilder.WithClientSecretAuthentication(
-                        configuration["FulfillmentClient:AzureActiveDirectory:AppKey"]));
+            services.AddFulfillmentClient(options => configuration.Bind("FulfillmentClient", options));
             services
                 .AddWebhookProcessor()
                 .WithWebhookHandler<MockWebhookHandler>();

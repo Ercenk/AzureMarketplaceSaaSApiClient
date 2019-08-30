@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Identity.Client;
 using Newtonsoft.Json;
 using SaaSFulfillmentClient.AzureAD;
 using SaaSFulfillmentClient.Models;
@@ -15,21 +14,15 @@ namespace SaaSFulfillmentClient
     public class FulfillmentClient : RestClient<FulfillmentClient>, IFulfillmentClient
     {
         public FulfillmentClient(IOptionsMonitor<SecuredFulfillmentClientConfiguration> optionsMonitor,
-            ICredentialProvider credentialProvider,
             ILogger<FulfillmentClient> logger) : this(null,
             optionsMonitor.CurrentValue,
-            credentialProvider,
-            AdApplicationHelper.GetApplication,
             logger)
         {
         }
 
         public FulfillmentClient(SecuredFulfillmentClientConfiguration options,
-            ICredentialProvider credentialProvider,
             ILogger<FulfillmentClient> logger) : this(null,
             options,
-            credentialProvider,
-            AdApplicationHelper.GetApplication,
             logger)
         {
         }
@@ -37,10 +30,7 @@ namespace SaaSFulfillmentClient
         public FulfillmentClient(
             HttpMessageHandler httpMessageHandler,
             SecuredFulfillmentClientConfiguration options,
-            ICredentialProvider credentialProvider,
-            Func<SecuredFulfillmentClientConfiguration, ICredentialProvider, IConfidentialClientApplication>
-                adApplicationFactory,
-            ILogger<FulfillmentClient> logger) : base(options, logger, adApplicationFactory(options, credentialProvider), httpMessageHandler)
+            ILogger<FulfillmentClient> logger) : base(options, logger, httpMessageHandler)
         {
         }
 
