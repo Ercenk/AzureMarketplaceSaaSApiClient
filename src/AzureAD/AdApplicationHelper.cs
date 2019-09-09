@@ -16,7 +16,7 @@ namespace SaaSFulfillmentClient.AzureAD
             var credential = new ClientCredential(options.AzureActiveDirectory.ClientId.ToString(), options.AzureActiveDirectory.AppKey);
             var authContext = new AuthenticationContext(authenticationEndpoint + options.AzureActiveDirectory.TenantId, false);
             var token = await authContext.AcquireTokenAsync(marketplaceResourceId, credential);
-            return $"Bearer {token.AccessToken}";
+            return token.AccessToken;
         }
     }
 }
