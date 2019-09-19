@@ -15,6 +15,8 @@
         Suspend,
 
         // (When resource has been reinstated after suspension)
-        Reinstate
+        Reinstate,
+
+        Transfer
     }
 }

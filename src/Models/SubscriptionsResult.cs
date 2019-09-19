@@ -22,7 +22,9 @@ namespace SaaSFulfillmentClient.Models
         Provisioning,
         Subscribed,
         Suspended,
-        Unsubscribed
+        Unsubscribed,
+        NotStarted,
+        PendingFulfillmentStart
     }
 
     public class Beneficiary
@@ -40,6 +42,11 @@ namespace SaaSFulfillmentClient.Models
         public IEnumerable<AllowedCustomerOperationEnum> AllowedCustomerOperations { get; set; }
         public Beneficiary Beneficiary { get; set; }
 
+        /// <summary>
+        /// true – the customer subscription is currently in free trial, false – the customer subscription is not currently in free trial.
+        /// </summary>
+        public bool IsFreeTrial { get; set; }
+
         public string Name { get; set; }
 
         public string OfferId { get; set; }
@@ -56,6 +63,10 @@ namespace SaaSFulfillmentClient.Models
 
         public SessionModeEnum SessionMode { get; set; }
 
-        [JsonProperty("id")] public Guid SubscriptionId { get; set; }
+        [JsonProperty("id")]
+        public Guid SubscriptionId { get; set; }
+
+        [JsonProperty("term")]
+        public Term TrialTerm { get; set; }
     }
 }

@@ -13,7 +13,8 @@ namespace SaaSFulfillmentClient.Models
 
         public int Quantity { get; set; }
 
-        [JsonProperty("id")] public Guid SubscriptionId { get; set; }
+        [JsonProperty("id")]
+        public Guid SubscriptionId { get; set; }
 
         public string SubscriptionName { get; set; }
     }
