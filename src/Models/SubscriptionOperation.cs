@@ -2,6 +2,8 @@
 
 namespace SaaSFulfillmentClient.Models
 {
+    using System.Collections.Generic;
+
     public class SubscriptionOperation : FulfillmentRequestResult
     {
         public string Action { get; set; }
@@ -16,5 +18,11 @@ namespace SaaSFulfillmentClient.Models
         public OperationStatusEnum Status { get; set; }
         public Guid SubscriptionId { get; set; }
         public DateTime TimeStamp { get; set; }
+    }
+
+    public class SubscriptionOperationResult : FulfillmentRequestResult
+    {
+        public string ContinuationToken { get; set; }
+        public IEnumerable<SubscriptionOperation> Operations { get; set; }
     }
 }

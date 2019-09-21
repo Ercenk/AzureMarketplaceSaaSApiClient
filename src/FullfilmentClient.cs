@@ -13,6 +13,8 @@ namespace SaaSFulfillmentClient
 {
     public class FulfillmentClient : RestClient<FulfillmentClient>, IFulfillmentClient
     {
+        private const string mockApiVersion = "2018-09-15";
+
         public FulfillmentClient(IOptionsMonitor<SecuredFulfillmentClientConfiguration> optionsMonitor,
             ILogger<FulfillmentClient> logger) : this(null,
             optionsMonitor.CurrentValue,
@@ -182,7 +184,12 @@ namespace SaaSFulfillmentClient
                 "",
                 cancellationToken);
 
-            return await FulfillmentRequestResult.ParseMultipleAsync<SubscriptionOperation>(response);
+            if (this.apiVersion == mockApiVersion)
+            {
+                return await FulfillmentRequestResult.ParseMultipleAsync<SubscriptionOperation>(response);
+            }
+
+            return (await FulfillmentRequestResult.ParseAsync<SubscriptionOperationResult>(response)).Operations;
         }
 
         public async Task<SubscriptionPlans> GetSubscriptionPlansAsync(Guid subscriptionId, Guid requestId,
@@ -232,7 +239,12 @@ namespace SaaSFulfillmentClient
                 "",
                 cancellationToken);
 
-            return await FulfillmentRequestResult.ParseMultipleAsync<Subscription>(response);
+            if (this.apiVersion == mockApiVersion)
+            {
+                return await FulfillmentRequestResult.ParseMultipleAsync<Subscription>(response);
+            }
+
+            return (await FulfillmentRequestResult.ParseAsync<SubscriptionResult>(response)).Subscriptions;
         }
 
         /// <summary>

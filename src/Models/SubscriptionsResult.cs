@@ -69,4 +69,10 @@ namespace SaaSFulfillmentClient.Models
         [JsonProperty("term")]
         public Term TrialTerm { get; set; }
     }
+
+    public class SubscriptionResult : FulfillmentRequestResult
+    {
+        public string ContinuationToken { get; set; }
+        public IEnumerable<Subscription> Subscriptions { get; set; }
+    }
 }

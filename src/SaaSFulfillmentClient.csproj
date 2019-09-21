@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <PackageId>AzureMarketplaceSaaSApiClient</PackageId>
-    <Version>2.0.15</Version>
+    <Version>2.0.16</Version>
     <Authors>Ercenk Keresteci</Authors>
     <Product>AzureMarketplaceSaaSApiClient</Product>
     <Description>An experimental .NET client implementation for the Azure Marketplace SaaS Fulfillment API V2 based on the mock API</Description>
@@ -14,14 +14,15 @@
     <RepositoryUrl>https://github.com/Ercenk/AzureMarketplaceSaaSApiClient</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <PackageTags>Azure, Marketplace</PackageTags>
-    <PackageReleaseNotes>
-      Breaking changes for AAD authentication. Modified the AAD authentication to use V1 endpoint and the hardcoded resource id from the marketplace documentation. Reverted to single-tenant implementation for the AAD application.
+    <PackageReleaseNotes>Breaking changes for AAD authentication. Modified the AAD authentication to use V1 endpoint and the hardcoded resource id from the marketplace documentation. Reverted to single-tenant implementation for the AAD application.
       SImplified client constructors. They no longer accept a credential builder.
     
-Updated subscription status enum based on the update on the documentation.</PackageReleaseNotes>
+Updated subscription status enum based on the update on the documentation.
+
+HACK: Covering the discrepancy between prod API and mock API for gell all subscriptions and operations</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <AssemblyVersion>2.0.15.0</AssemblyVersion>
-    <FileVersion>2.0.15.0</FileVersion>
+    <AssemblyVersion>2.0.16.0</AssemblyVersion>
+    <FileVersion>2.0.16.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
