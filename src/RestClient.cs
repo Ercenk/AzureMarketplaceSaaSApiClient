@@ -68,9 +68,9 @@
                 $"Received response {caller}: requestId: {requestId} correlationId: {correlationId}. Status: {responseStatusCode}. Response content: {result}";
         }
 
-        private string BuildSendLogMessage(Guid requestId, Guid correlationId, string caller)
+        private string BuildSendLogMessage(Guid requestId, Guid correlationId, string caller, Uri requestUri)
         {
-            return $"Sending request {caller}: requestId: {requestId} correlationId: {correlationId}";
+            return $"Sending request {caller}, requestUri: {requestUri} requestId: {requestId} correlationId: {correlationId}";
         }
 
         private HttpClient GetHttpClient()
@@ -93,7 +93,7 @@
         {
             var bearerToken = await AdApplicationHelper.GetBearerToken(this.options);
 
-            this.logger.LogInformation(this.BuildSendLogMessage(requestId, correlationId, caller));
+            this.logger.LogInformation(this.BuildSendLogMessage(requestId, correlationId, caller, requestUri));
             using (var httpClient = this.GetHttpClient())
             {
                 var marketplaceApiRequest =
