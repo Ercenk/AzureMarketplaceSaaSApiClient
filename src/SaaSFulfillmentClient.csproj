@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <PackageId>AzureMarketplaceSaaSApiClient</PackageId>
-    <Version>2.0.18</Version>
+    <Version>2.0.19</Version>
     <Authors>Ercenk Keresteci</Authors>
     <Product>AzureMarketplaceSaaSApiClient</Product>
     <Description>An experimental .NET client implementation for the Azure Marketplace SaaS Fulfillment API V2 based on the mock API</Description>
@@ -20,8 +20,8 @@ Added request URI for the API calls to logs
 HACK: Covering the discrepancy between prod API and mock API for gell all subscriptions and operations
 </PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <AssemblyVersion>2.0.18.0</AssemblyVersion>
-    <FileVersion>2.0.18.0</FileVersion>
+    <AssemblyVersion>2.0.19.0</AssemblyVersion>
+    <FileVersion>2.0.19.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
