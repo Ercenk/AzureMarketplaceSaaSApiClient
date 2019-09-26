@@ -9,7 +9,7 @@ namespace SaaSFulfillmentClient.Models
         private const string OperationLocationKey = "Operation-Location";
         private const string RetryAfterKey = "Retry-After";
 
-        public Guid Operation { get; set; }
+        public Guid OperationId { get; set; }
 
         public int RetryAfter { get; set; }
 
@@ -47,7 +47,7 @@ namespace SaaSFulfillmentClient.Models
                     throw new ApplicationException("Returned operation ID is not a Guid");
                 }
 
-                this.Operation = operationGuid;
+                this.OperationId = operationGuid;
             }
 
             if (!headers.TryGetValues(RetryAfterKey, out values))
