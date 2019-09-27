@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <PackageId>AzureMarketplaceSaaSApiClient</PackageId>
-    <Version>3.0.1</Version>
+    <Version>3.1.0</Version>
     <Authors>Ercenk Keresteci</Authors>
     <Product>AzureMarketplaceSaaSApiClient</Product>
     <Description>An experimental .NET client implementation for the Azure Marketplace SaaS Fulfillment API V2 based on the mock API</Description>
@@ -15,14 +15,16 @@
     <RepositoryType>GitHub</RepositoryType>
     <PackageTags>Azure, Marketplace</PackageTags>
     <PackageReleaseNotes>IMPORTANT ... moved .net core dependency to 3.0
-Added request URI for the API calls to logs.
-Changed the update subscription result to include operationID instead.
+
+BREAKING: 
+-Changed the "PATCH" request for updating a subscription according to the API documentation
+-Non-success HTTP results are now returned as the result of the API calls
 
 HACK: Covering the discrepancy between prod API and mock API for gell all subscriptions and operations
 </PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <AssemblyVersion>3.0.1.0</AssemblyVersion>
-    <FileVersion>3.0.1.0</FileVersion>
+    <AssemblyVersion>3.1.0.0</AssemblyVersion>
+    <FileVersion>3.1.0.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

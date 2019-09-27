@@ -36,10 +36,18 @@ namespace SaaSFulfillmentClient
         Task<ResolvedSubscription> ResolveSubscriptionAsync(string marketplaceToken, Guid requestId, Guid correlationId,
             CancellationToken cancellationToken);
 
-        Task<UpdateOrDeleteSubscriptionRequestResult> UpdateSubscriptionAsync(Guid subscriptionId,
-            ActivatedSubscription update, Guid requestId, Guid correlationId, CancellationToken cancellationToken);
+        Task<FulfillmentRequestResult> UpdateSubscriptionOperationAsync(
+            Guid subscriptionId,
+            Guid operationId,
+            OperationUpdate update,
+            Guid requestId,
+            Guid correlationId,
+            CancellationToken cancellationToken);
 
-        Task<FulfillmentRequestResult> UpdateSubscriptionOperationAsync(Guid subscriptionId, Guid operationId, OperationUpdate update, Guid requestId,
-                                                                                                          Guid correlationId, CancellationToken cancellationToken);
+        Task<UpdateOrDeleteSubscriptionRequestResult> UpdateSubscriptionPlanAsync(
+            Guid subscriptionId, string planId, Guid requestId, Guid correlationId, CancellationToken cancellationToken);
+
+        Task<UpdateOrDeleteSubscriptionRequestResult> UpdateSubscriptionQuantityAsync(
+            Guid subscriptionId, int quantity, Guid requestId, Guid correlationId, CancellationToken cancellationToken);
     }
 }

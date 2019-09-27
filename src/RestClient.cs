@@ -102,12 +102,19 @@
                 // Give option to modify the request for non-default settings
                 customRequestBuilder?.Invoke(marketplaceApiRequest);
 
+                HttpResponseMessage response;
+                var responseBody = string.Empty;
+
                 try
                 {
-                    var response = await httpClient.SendAsync(marketplaceApiRequest, cancellationToken);
-                    var result = await response.Content.ReadAsStringAsync();
-                    var responseLogMessage = this.BuildReceivedLogMessage(requestId, correlationId, response.StatusCode,
-                        result,
+                    response = await httpClient.SendAsync(marketplaceApiRequest, cancellationToken);
+                    responseBody = await response.Content.ReadAsStringAsync();
+
+                    var responseLogMessage = this.BuildReceivedLogMessage(
+                        requestId,
+                        correlationId,
+                        response.StatusCode,
+                        responseBody,
                         caller);
 
                     if (response.IsSuccessStatusCode)
@@ -123,9 +130,9 @@
                     throw;
                 }
 
-                var responseLogErrorMessage = $"Unsuccessful request ${marketplaceApiRequest.RequestUri}";
+                var responseLogErrorMessage = $"Unsuccessful request ${marketplaceApiRequest.RequestUri} with contents: {responseBody}";
                 this.logger.LogError(responseLogErrorMessage);
-                throw new ApplicationException(responseLogErrorMessage);
+                return response;
             }
         }
     }

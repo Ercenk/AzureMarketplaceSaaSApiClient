@@ -272,14 +272,12 @@ namespace SaaSFulfillmentClientTests
 
             requestId = Guid.NewGuid();
 
-            var update = new ActivatedSubscription { PlanId = "Gold", Quantity = "" };
-
-            var result = await this.client.UpdateSubscriptionAsync(
+            var result = await this.client.UpdateSubscriptionPlanAsync(
                 subscriptions.First().SubscriptionId,
-                update,
+                "Gold",
                 requestId,
                 correlationId,
-                new CancellationTokenSource().Token);
+                cancellationToken: new CancellationTokenSource().Token);
 
             Assert.NotNull(result.OperationId);
             Assert.NotNull(result);

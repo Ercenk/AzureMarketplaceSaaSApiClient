@@ -287,37 +287,6 @@ namespace SaaSFulfillmentClient
             return await FulfillmentRequestResult.ParseAsync<ResolvedSubscription>(response);
         }
 
-        public async Task<UpdateOrDeleteSubscriptionRequestResult> UpdateSubscriptionAsync(Guid subscriptionId,
-            ActivatedSubscription update, Guid requestId, Guid correlationId, CancellationToken cancellationToken)
-        {
-            var requestUrl = FluentUriBuilder
-                .Start(this.baseUri)
-                .AddPath("subscriptions")
-                .AddPath(subscriptionId.ToString())
-                .AddQuery(DefaultApiVersionParameterName, this.apiVersion)
-                .Uri;
-
-            requestId = requestId == default ? Guid.NewGuid() : requestId;
-            correlationId = correlationId == default ? Guid.NewGuid() : correlationId;
-            var updateContent = JsonConvert.SerializeObject(update);
-
-            if (!string.IsNullOrEmpty(update.PlanId) && !string.IsNullOrEmpty(update.Quantity))
-            {
-                throw new ApplicationException("Plan Id and quantity cannot be patched at the same time.");
-            }
-
-            var response = await this.SendRequestAndReturnResult(
-                new HttpMethod("PATCH"),
-                requestUrl,
-                requestId,
-                correlationId,
-                null,
-                updateContent,
-                cancellationToken);
-
-            return await FulfillmentRequestResult.ParseAsync<UpdateOrDeleteSubscriptionRequestResult>(response);
-        }
-
         public async Task<FulfillmentRequestResult> UpdateSubscriptionOperationAsync(
             Guid subscriptionId,
             Guid operationId,
@@ -348,6 +317,66 @@ namespace SaaSFulfillmentClient
                                cancellationToken);
 
             return await FulfillmentRequestResult.ParseAsync<ResolvedSubscription>(response);
+        }
+
+        public async Task<UpdateOrDeleteSubscriptionRequestResult> UpdateSubscriptionPlanAsync(
+            Guid subscriptionId,
+            string planId,
+            Guid requestId,
+            Guid correlationId,
+            CancellationToken cancellationToken)
+        {
+            var requestUrl = FluentUriBuilder
+                .Start(this.baseUri)
+                .AddPath("subscriptions")
+                .AddPath(subscriptionId.ToString())
+                .AddQuery(DefaultApiVersionParameterName, this.apiVersion)
+                .Uri;
+
+            requestId = requestId == default ? Guid.NewGuid() : requestId;
+            correlationId = correlationId == default ? Guid.NewGuid() : correlationId;
+            var updateContent = JsonConvert.SerializeObject(new { planId = planId });
+
+            var response = await this.SendRequestAndReturnResult(
+                               new HttpMethod("PATCH"),
+                               requestUrl,
+                               requestId,
+                               correlationId,
+                               null,
+                               updateContent,
+                               cancellationToken);
+
+            return await FulfillmentRequestResult.ParseAsync<UpdateOrDeleteSubscriptionRequestResult>(response);
+        }
+
+        public async Task<UpdateOrDeleteSubscriptionRequestResult> UpdateSubscriptionQuantityAsync(
+            Guid subscriptionId,
+            int quantity,
+            Guid requestId,
+            Guid correlationId,
+            CancellationToken cancellationToken)
+        {
+            var requestUrl = FluentUriBuilder
+                .Start(this.baseUri)
+                .AddPath("subscriptions")
+                .AddPath(subscriptionId.ToString())
+                .AddQuery(DefaultApiVersionParameterName, this.apiVersion)
+                .Uri;
+
+            requestId = requestId == default ? Guid.NewGuid() : requestId;
+            correlationId = correlationId == default ? Guid.NewGuid() : correlationId;
+            var updateContent = JsonConvert.SerializeObject(new { quantity = quantity });
+
+            var response = await this.SendRequestAndReturnResult(
+                               new HttpMethod("PATCH"),
+                               requestUrl,
+                               requestId,
+                               correlationId,
+                               null,
+                               updateContent,
+                               cancellationToken);
+
+            return await FulfillmentRequestResult.ParseAsync<UpdateOrDeleteSubscriptionRequestResult>(response);
         }
     }
 }
