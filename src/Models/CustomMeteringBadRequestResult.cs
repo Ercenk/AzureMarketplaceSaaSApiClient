@@ -11,7 +11,7 @@
 
     public class CustomMeteringBadRequestResult : CustomMeteringRequestResult
     {
-        public string Code { get; set; }
+        public new string Code { get; set; }
         public IEnumerable<CustomerMeterErrorDetails> Details { get; set; }
         public string Message { get; set; }
 

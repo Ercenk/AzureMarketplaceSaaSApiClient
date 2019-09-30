@@ -279,7 +279,7 @@ namespace SaaSFulfillmentClientTests
                 correlationId,
                 cancellationToken: new CancellationTokenSource().Token);
 
-            Assert.NotNull(result.OperationId);
+            Assert.NotEqual(result.OperationId, Guid.Empty);
             Assert.NotNull(result);
             Assert.NotEqual(0, result.RetryAfter);
         }
