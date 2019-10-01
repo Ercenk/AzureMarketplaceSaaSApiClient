@@ -14,17 +14,30 @@ namespace SaaSFulfillmentClient
     public class FulfillmentClient : RestClient<FulfillmentClient>, IFulfillmentClient
     {
         private const string mockApiVersion = "2018-09-15";
+        private readonly IOperationsStore operationsStore;
 
         public FulfillmentClient(IOptionsMonitor<SecuredFulfillmentClientConfiguration> optionsMonitor,
-            ILogger<FulfillmentClient> logger) : this(null,
+                                 ILogger<FulfillmentClient> logger) : this(null,
             optionsMonitor.CurrentValue,
+            null,
             logger)
         {
         }
 
+        public FulfillmentClient(IOptionsMonitor<SecuredFulfillmentClientConfiguration> optionsMonitor,
+                                 IOperationsStore operationsStore,
+                                ILogger<FulfillmentClient> logger) : this(null,
+                                optionsMonitor.CurrentValue,
+                                operationsStore,
+                                logger)
+        {
+        }
+
         public FulfillmentClient(SecuredFulfillmentClientConfiguration options,
-            ILogger<FulfillmentClient> logger) : this(null,
+                                 IOperationsStore operationsStore,
+                                 ILogger<FulfillmentClient> logger) : this(null,
             options,
+            operationsStore,
             logger)
         {
         }
@@ -32,8 +45,10 @@ namespace SaaSFulfillmentClient
         public FulfillmentClient(
             HttpMessageHandler httpMessageHandler,
             SecuredFulfillmentClientConfiguration options,
+            IOperationsStore operationsStore,
             ILogger<FulfillmentClient> logger) : base(options, logger, httpMessageHandler)
         {
+            this.operationsStore = operationsStore;
         }
 
         public async Task<FulfillmentRequestResult> ActivateSubscriptionAsync(Guid subscriptionId,
@@ -85,7 +100,14 @@ namespace SaaSFulfillmentClient
                 "",
                 cancellationToken);
 
-            return await FulfillmentRequestResult.ParseAsync<UpdateOrDeleteSubscriptionRequestResult>(response);
+            var result = await FulfillmentRequestResult.ParseAsync<UpdateOrDeleteSubscriptionRequestResult>(response);
+
+            if (this.operationsStore != default)
+            {
+                await this.operationsStore.RecordAsync(subscriptionId, result, cancellationToken);
+            }
+
+            return result;
         }
 
         public async Task<IEnumerable<SubscriptionOperation>> GetOperationsAsync(Guid requestId, Guid correlationId,
@@ -345,8 +367,14 @@ namespace SaaSFulfillmentClient
                                null,
                                updateContent,
                                cancellationToken);
+            var result = await FulfillmentRequestResult.ParseAsync<UpdateOrDeleteSubscriptionRequestResult>(response);
 
-            return await FulfillmentRequestResult.ParseAsync<UpdateOrDeleteSubscriptionRequestResult>(response);
+            if (this.operationsStore != default)
+            {
+                await this.operationsStore.RecordAsync(subscriptionId, result, cancellationToken);
+            }
+
+            return result;
         }
 
         public async Task<UpdateOrDeleteSubscriptionRequestResult> UpdateSubscriptionQuantityAsync(

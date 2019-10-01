@@ -41,7 +41,7 @@ namespace SaaSFulfillmentClientTests
                 }
             };
 
-            this.client = new FulfillmentClient(options, this.loggerMock.Object);
+            this.client = new FulfillmentClient(options, null, this.loggerMock.Object);
         }
 
         [Fact]

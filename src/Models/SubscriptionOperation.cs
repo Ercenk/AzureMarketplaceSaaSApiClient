@@ -8,6 +8,8 @@ namespace SaaSFulfillmentClient.Models
     {
         public string Action { get; set; }
         public Guid ActivityId { get; set; }
+        public string ErrorMessage { get; set; }
+        public string ErrorStatusCode { get; set; }
         public Guid Id { get; set; }
         public string OfferId { get; set; }
         public string OperationRequestSource { get; set; }
@@ -17,7 +19,7 @@ namespace SaaSFulfillmentClient.Models
         public Uri ResourceLocation { get; set; }
         public OperationStatusEnum Status { get; set; }
         public Guid SubscriptionId { get; set; }
-        public DateTime TimeStamp { get; set; }
+        public DateTimeOffset TimeStamp { get; set; }
     }
 
     public class SubscriptionOperationResult : FulfillmentRequestResult

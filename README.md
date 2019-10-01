@@ -39,3 +39,18 @@ If you are using dotnet dependency injection, again, I have an extension method.
 ```
 
 The [WebhookProcessor](https://github.com/Ercenk/AzureMarketplaceSaaSApiClient/blob/master/src/WebHook/WebhookProcessor.cs#L77) class takes care of validating the webhook call by the AMP commerce engine, and calls the handler's appropriate methods. Then call the ```ProcessWebhookNotificationAsync``` method in your webhook endpoint code.
+
+### Operations Store
+
+Although the API provides a "List outstanding operation" call, as the name states, it returns only the operations that are in progress. If you want to retrieve the status of an operation, such as "DELETE" or "PATCH" requests, you need to keep track of the operations.
+This new capability adds a way to store the resulting operations, and enables you to query the result of the operation by using ```GetSubscriptionOperationAsync``` method.
+
+Just use the following if you want to use it with ASP.NET 
+
+``` csharp
+            services.AddFulfillmentClient(
+                options => this.configuration.Bind("FulfillmentClient", options))
+                .WithAzureTableOperationsStore(this.configuration["OperationsStoreConnectionString"]);
+```
+
+If you wish to use your own implementation for the store, you can register it with ```WithOperationsStore```. Please see the source.

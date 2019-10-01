@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <PackageId>AzureMarketplaceSaaSApiClient</PackageId>
-    <Version>3.1.0</Version>
+    <Version>3.2.0</Version>
     <Authors>Ercenk Keresteci</Authors>
     <Product>AzureMarketplaceSaaSApiClient</Product>
     <Description>An experimental .NET client implementation for the Azure Marketplace SaaS Fulfillment API V2 based on the mock API</Description>
@@ -14,28 +14,39 @@
     <RepositoryUrl>https://github.com/Ercenk/AzureMarketplaceSaaSApiClient</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <PackageTags>Azure, Marketplace</PackageTags>
-    <PackageReleaseNotes>IMPORTANT ... moved .net core dependency to 3.0
+    <PackageReleaseNotes>IMPORTANT ... moved .net core dependency back to 2.2. Please check global.json for the minor version.
+
+
 
 BREAKING: 
 -Changed the "PATCH" request for updating a subscription according to the API documentation
 -Non-success HTTP results are now returned as the result of the API calls
 
+
+
 HACK: Covering the discrepancy between prod API and mock API for gell all subscriptions and operations
-</PackageReleaseNotes>
+
+Added Operation store capability
+
+
+NEW: Added the operations store capability</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <AssemblyVersion>3.1.0.0</AssemblyVersion>
-    <FileVersion>3.1.0.0</FileVersion>
+    <AssemblyVersion>3.2.0.0</AssemblyVersion>
+    <FileVersion>3.2.0.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Azure.Cosmos.Table" Version="1.0.5" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="2.2.0" />
-    <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="5.2.0" />
+    <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="5.2.2" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="NewFolder\" />
     <Folder Include="Properties\" />
   </ItemGroup>
 
