@@ -14,8 +14,11 @@ namespace SaaSFulfillmentClient.AzureAD
         public static async Task<string> GetBearerToken(SecuredFulfillmentClientConfiguration options)
         {
             var credential = new ClientCredential(options.AzureActiveDirectory.ClientId.ToString(), options.AzureActiveDirectory.AppKey);
+
             var authContext = new AuthenticationContext(authenticationEndpoint + options.AzureActiveDirectory.TenantId, false);
+
             var token = await authContext.AcquireTokenAsync(marketplaceResourceId, credential);
+            
             return token.AccessToken;
         }
     }

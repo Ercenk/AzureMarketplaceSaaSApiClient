@@ -183,9 +183,11 @@ namespace SaaSFulfillmentClientTests
             }
         }
 
-        private static IEnumerable<Subscription> GenerateSubscriptions(int numberOfSubscriptions)
+        private static SubscriptionResult GenerateSubscriptions(int numberOfSubscriptions)
         {
-            return
+            return new SubscriptionResult
+            {
+                Subscriptions =
                 Enumerable.Range(0, numberOfSubscriptions).Select(r => new Subscription
                 {
                     SubscriptionId = Guid.NewGuid(),
@@ -202,7 +204,8 @@ namespace SaaSFulfillmentClientTests
                     },
                     SessionMode = SessionModeEnum.None,
                     SaasSubscriptionStatus = StatusEnum.Provisioning
-                }).ToList();
+                }).ToList()
+            };
         }
     }
 }

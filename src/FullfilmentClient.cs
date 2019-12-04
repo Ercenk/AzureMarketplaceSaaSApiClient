@@ -261,11 +261,6 @@ namespace SaaSFulfillmentClient
                 "",
                 cancellationToken);
 
-            if (this.apiVersion == mockApiVersion)
-            {
-                return await FulfillmentRequestResult.ParseMultipleAsync<Subscription>(response);
-            }
-
             return (await FulfillmentRequestResult.ParseAsync<SubscriptionResult>(response)).Subscriptions;
         }
 
