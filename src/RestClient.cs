@@ -38,14 +38,14 @@
             Uri requestUri,
             Guid requestId,
             Guid correlationId,
-            string bearerToken,
+            string accessToken,
             string content)
         {
             var request = new HttpRequestMessage { RequestUri = requestUri, Method = method };
 
             request.Headers.Add("x-ms-requestid", requestId.ToString());
             request.Headers.Add("x-ms-correlationid", correlationId.ToString());
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
             if (method == HttpMethod.Post ||
                 method.ToString().ToUpper() == "PATCH")
@@ -91,13 +91,13 @@
             CancellationToken cancellationToken = default,
             [CallerMemberName] string caller = "")
         {
-            var bearerToken = await AdApplicationHelper.GetBearerToken(this.options);
+            var accessToken = await AdApplicationHelper.GetAccessToken(this.options);
 
             this.logger.LogInformation(this.BuildSendLogMessage(requestId, correlationId, caller, method, requestUri, content));
             using (var httpClient = this.GetHttpClient())
             {
                 var marketplaceApiRequest =
-                    BuildRequest(method, requestUri, requestId, correlationId, bearerToken, content);
+                    BuildRequest(method, requestUri, requestId, correlationId, accessToken, content);
 
                 // Give option to modify the request for non-default settings
                 customRequestBuilder?.Invoke(marketplaceApiRequest);
