@@ -8,15 +8,13 @@ The Azure SaaS Fulfillment API V2 reference is: [here](https://docs.microsoft.co
 
 There is also a Postman collection showing the mock API.
 
-This client is based on the mock API referenced in the article above.
-
 The client is also available as a Nuget package at https://www.nuget.org/packages/AzureMarketplaceSaaSApiClient/
 
 ## Using the library
 
 Register a new AAD application as described in the [documentation](https://docs.microsoft.com/en-us/azure/active-directory/develop/scenario-web-app-call-api-app-registration) and keep the secret. I recommend you to have a separate AAD application for API integration other than the one used in the landing page. This application can be single-tenant.
 
-The library does not implement certificate authentication yet, but I love to see PRs. Please feel free to submit. So generate a key on the portal, and keep it in your favorite secret location, such as [KeyVault](https://docs.microsoft.com/en-us/aspnet/core/security/key-vault-configuration?view=aspnetcore-2.2). I use ```dotnet user-secrets``` for my development.
+The library does not implement certificate authentication yet, but I love to see PRs. Please feel free to submit. So generate a key on the portal, and keep it in your favorite secret location, such as [KeyVault](https://docs.microsoft.com/en-us/aspnet/core/security/key-vault-configuration?view=aspnetcore-2.2). I use ```dotnet user-secrets``` for my development environment.
 
 If you are using dotnet dependency injection, there is an [extension method](https://github.com/Ercenk/AzureMarketplaceSaaSApiClient/blob/master/src/FulfillmentClientServiceCollectionExtensions.cs) for you. Please see the usage in the [test](https://github.com/Ercenk/AzureMarketplaceSaaSApiClient/blob/master/test/SaaSFulfillmentClientTests/WebHookTests.cs#L76) for registering the types and inject to the classes using those.
 
@@ -58,13 +56,11 @@ If you wish to use your own implementation for the store, you can register it wi
 
 I recommend to register a separate Azure Active Directory App for calling the API, and make it single tenant. The first step for a publisher is to register an Azure AD app, and record its details (Tenant Id and App Id, a.k.a. Client Id) on the Commercial Marketplace portal.
 
-![RegisterApp](./Docs/RegisterApp.png)
-
-The API client accepts the Tenant Id, App Id, and App secret as properties of ```SecuredFulfillmentClientConfiguration ```, and uses those to grab an Auth token from Azure AD. The high level scenario for a web app calling an API with the stored application secret is [here](https://docs.microsoft.com/en-us/azure/active-directory/develop/scenario-web-app-call-api-overview).
+The API client accepts the Tenant Id, App Id, and App secret as properties of ```SecuredFulfillmentClientConfiguration ```, and uses those to grab an access token from Azure AD. The high level scenario for a web app calling an API with the stored application secret is [here](https://docs.microsoft.com/en-us/azure/active-directory/develop/scenario-web-app-call-api-overview).
 
 The dance of an authenticated solution with the Marketplace API works like this.
 
-- Access the Azure AD authentication endpoint to grab an auth token. You will need to provide the client Id, client secret and a resource (default value is "62d94f6c-d599-489b-a797-3e10e42fbe22" as listed in the [documentation](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-registration#get-a-token-based-on-the-azure-ad-app)). Please note that this is the V1 endpoint for Azure AD. V2 endpoint does not accept a resource, but a "scope" with a URL format. The API client uses the following code to get the Auth Token. Please see the use of Client ID, Client Secret and resource ID below. The tenant ID is passed in the URL for the authentication endpoint. The following code snippet is from the [AdApplicationHelper class](https://github.com/Ercenk/AzureMarketplaceSaaSApiClient/blob/master/src/AzureAD/AdApplicationHelper.cs):
+- Access the Azure AD authentication endpoint to grab an access token. You will need to provide the client Id, client secret and a resource (default value is "62d94f6c-d599-489b-a797-3e10e42fbe22" as listed in the [documentation](https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-registration#get-a-token-based-on-the-azure-ad-app)). Please note that this is the V1 endpoint for Azure AD. V2 endpoint does not accept a resource, but a "scope" with a URL format. The API client uses the following code to get the access token. Please see the use of Client ID, Client Secret and resource ID below. The tenant ID is passed in the URL for the authentication endpoint. The following code snippet is from the [AdApplicationHelper class](https://github.com/Ercenk/AzureMarketplaceSaaSApiClient/blob/master/src/AzureAD/AdApplicationHelper.cs):
 
     ```C#
                 var credential = new ClientCredential(options.AzureActiveDirectory.ClientId.ToString(), options.AzureActiveDirectory.AppKey);
@@ -73,7 +69,7 @@ The dance of an authenticated solution with the Marketplace API works like this.
                 return token.AccessToken;
     ```
 
-- Make a bearer token by prepending "Bearer " to the auth token, as show in the following code snippet ([RestClient class](https://github.com/Ercenk/AzureMarketplaceSaaSApiClient/blob/master/src/RestClient.cs#L48)) and set it to the "Authorization" header of the request
+- Make a bearer token by prepending "Bearer " to the access token, as show in the following code snippet ([RestClient class](https://github.com/Ercenk/AzureMarketplaceSaaSApiClient/blob/master/src/RestClient.cs#L48)) and set it to the "Authorization" header of the request
 
     ```C#
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", bearerToken);
