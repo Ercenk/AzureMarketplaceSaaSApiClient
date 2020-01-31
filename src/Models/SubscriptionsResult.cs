@@ -27,20 +27,24 @@ namespace SaaSFulfillmentClient.Models
         PendingFulfillmentStart
     }
 
-    public class Beneficiary
+    public class BeneficiaryOrPurchaser
     {
         public Guid TenantId { get; set; }
-    }
 
-    public class Purchaser
-    {
-        public Guid TenantId { get; set; }
+        [JsonProperty("emailId")]
+        public string EmailId { get; set; }
+
+        [JsonProperty("objectId")]
+        public Guid ObjectId { get; set; }
+
+        [JsonProperty("puid")]
+        public string Puid { get; set; }
     }
 
     public class Subscription : FulfillmentRequestResult
     {
         public IEnumerable<AllowedCustomerOperationEnum> AllowedCustomerOperations { get; set; }
-        public Beneficiary Beneficiary { get; set; }
+        public BeneficiaryOrPurchaser Beneficiary { get; set; }
 
         /// <summary>
         /// true – the customer subscription is currently in free trial, false – the customer subscription is not currently in free trial.
@@ -55,7 +59,7 @@ namespace SaaSFulfillmentClient.Models
 
         public string PublisherId { get; set; }
 
-        public Purchaser Purchaser { get; set; }
+        public BeneficiaryOrPurchaser Purchaser { get; set; }
 
         public int Quantity { get; set; }
 
@@ -67,7 +71,16 @@ namespace SaaSFulfillmentClient.Models
         public Guid SubscriptionId { get; set; }
 
         [JsonProperty("term")]
-        public Term TrialTerm { get; set; }
+        public Term Term { get; set; }
+
+        [JsonProperty("sessionId")]
+        public Guid SessionId { get; set; }
+
+        [JsonProperty("fulfillmentId")]
+        public Guid FulfillmentId { get; set; }
+
+        [JsonProperty("storeFront")]
+        public string StoreFront { get; set; }
     }
 
     public class SubscriptionResult : FulfillmentRequestResult

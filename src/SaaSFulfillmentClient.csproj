@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <LangVersion>latest</LangVersion>
     <PackageId>AzureMarketplaceSaaSApiClient</PackageId>
-    <Version>3.4.0</Version>
+    <Version>3.4.2</Version>
     <Authors>Ercenk Keresteci</Authors>
     <Product>AzureMarketplaceSaaSApiClient</Product>
     <Description>An experimental .NET client implementation for the Azure Marketplace SaaS Fulfillment API V2 based on the mock API</Description>
@@ -15,9 +15,8 @@
     <RepositoryType>GitHub</RepositoryType>
     <PackageTags>Azure, Marketplace</PackageTags>
     <PackageReleaseNotes>
-      IMPORTANT ... moved .net core dependency 3.1.100. Please check global.json for the minor version.
-      Implemented the latest mock api changes
-    </PackageReleaseNotes>
+      IMPORTANT ... moved .net core dependency 3.1.101. Please check global.json for the minor version.
+    Added new properties to Subscription object</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <AssemblyVersion>3.4.0.0</AssemblyVersion>
     <FileVersion>3.4.0.0</FileVersion>
@@ -25,6 +24,12 @@
     <OutputType>Library</OutputType>
     <StartupObject />
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="NewFolder\**" />
+    <EmbeddedResource Remove="NewFolder\**" />
+    <None Remove="NewFolder\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Azure.Cosmos.Table" Version="1.0.5" />
@@ -37,7 +42,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="NewFolder\" />
     <Folder Include="Properties\" />
   </ItemGroup>
 

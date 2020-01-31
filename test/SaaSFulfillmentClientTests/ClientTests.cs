@@ -195,8 +195,8 @@ namespace SaaSFulfillmentClientTests
                     OfferId = $"offer{r}",
                     PlanId = $"silver{r}",
                     Quantity = 10 + r,
-                    Beneficiary = new Beneficiary { TenantId = Guid.NewGuid() },
-                    Purchaser = new Purchaser { TenantId = Guid.NewGuid() },
+                    Beneficiary = new BeneficiaryOrPurchaser { TenantId = Guid.NewGuid() },
+                    Purchaser = new BeneficiaryOrPurchaser { TenantId = Guid.NewGuid() },
                     AllowedCustomerOperations = new List<AllowedCustomerOperationEnum>
                     {
                         //Enum.GetValues(typeof(AllowedCustomerOperationEnum))
