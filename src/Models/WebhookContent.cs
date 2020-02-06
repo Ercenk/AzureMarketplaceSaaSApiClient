@@ -24,6 +24,7 @@ namespace SaaSFulfillmentClient.Models
         public string SubscriptionId { get; set; }
         public DateTime TimeStamp { get; set; }
 
+        public string RawPayload { get; set; }
         public static WebhookContent Parse(string content)
         {
             return JsonConvert.DeserializeObject<WebhookContent>(content);

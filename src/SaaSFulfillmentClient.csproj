@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <LangVersion>latest</LangVersion>
     <PackageId>AzureMarketplaceSaaSApiClient</PackageId>
-    <Version>3.4.2</Version>
+    <Version>3.4.3</Version>
     <Authors>Ercenk Keresteci</Authors>
     <Product>AzureMarketplaceSaaSApiClient</Product>
     <Description>An experimental .NET client implementation for the Azure Marketplace SaaS Fulfillment API V2 based on the mock API</Description>
@@ -14,12 +14,12 @@
     <RepositoryUrl>https://github.com/Ercenk/AzureMarketplaceSaaSApiClient</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <PackageTags>Azure, Marketplace</PackageTags>
-    <PackageReleaseNotes>
+    <PackageReleaseNotes>Added RawPayload property to the WebHookPayload.
       IMPORTANT ... moved .net core dependency 3.1.101. Please check global.json for the minor version.
     Added new properties to Subscription object</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <AssemblyVersion>3.4.0.0</AssemblyVersion>
-    <FileVersion>3.4.0.0</FileVersion>
+    <AssemblyVersion>3.4.3.0</AssemblyVersion>
+    <FileVersion>3.4.3.0</FileVersion>
     <ApplicationIcon />
     <OutputType>Library</OutputType>
     <StartupObject />
