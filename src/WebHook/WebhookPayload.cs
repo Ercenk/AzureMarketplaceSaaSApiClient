@@ -21,5 +21,7 @@ namespace SaaSFulfillmentClient.WebHook
         public OperationStatusEnum Status { get; set; }
         public Guid SubscriptionId { get; set; }
         public DateTimeOffset TimeStamp { get; set; }
+
+        public string RawPayload { get; set; }
     }
 }
