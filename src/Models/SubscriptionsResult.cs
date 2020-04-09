@@ -86,6 +86,9 @@ namespace SaaSFulfillmentClient.Models
     public class SubscriptionResult : FulfillmentRequestResult
     {
         public string ContinuationToken { get; set; }
-        public IEnumerable<Subscription> Subscriptions { get; set; }
+
+        [JsonProperty("@nextLink")]
+        public string NextLink { get; set; }
+        public IList<Subscription> Subscriptions { get; set; }
     }
 }
