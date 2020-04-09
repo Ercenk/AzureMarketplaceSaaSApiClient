@@ -261,7 +261,25 @@ namespace SaaSFulfillmentClient
                 "",
                 cancellationToken);
 
-            return (await FulfillmentRequestResult.ParseAsync<SubscriptionResult>(response)).Subscriptions;
+            var result = await FulfillmentRequestResult.ParseAsync<SubscriptionResult>(response);
+            var subscriptions = new List<Subscription>(result.Subscriptions);
+
+            while (!string.IsNullOrEmpty(result.NextLink))
+            {
+                requestId = Guid.NewGuid();
+                response = await this.SendRequestAndReturnResult(HttpMethod.Get,
+                    new Uri(result.NextLink),
+                    requestId,
+                    correlationId,
+                    null,
+                    "",
+                    cancellationToken);
+                
+                result = await FulfillmentRequestResult.ParseAsync<SubscriptionResult>(response);
+                subscriptions.AddRange(result.Subscriptions);
+            }
+
+            return subscriptions;
         }
 
         /// <summary>
