@@ -12,7 +12,7 @@
     {
         Task<IEnumerable<DimensionUsageRecord>> GetAllDimensionRecordsAsync(Guid subscriptionId, CancellationToken cancellationToken = default);
 
-        Task RecordAsync(Guid subscriptionId,
+        Task RecordAsync(string subscriptionId,
                          CustomMeteringRequestResult result,
                          CancellationToken cancellationToken = default);
     }

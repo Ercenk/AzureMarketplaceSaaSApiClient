@@ -52,7 +52,7 @@
             return result;
         }
 
-        public async Task RecordAsync(Guid subscriptionId, CustomMeteringRequestResult result, CancellationToken cancellationToken = default)
+        public async Task RecordAsync(string subscriptionId, CustomMeteringRequestResult result, CancellationToken cancellationToken = default)
         {
             var table = this.tableClient.GetTableReference(TableName);
 

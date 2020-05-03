@@ -49,6 +49,11 @@ namespace SaaSFulfillmentClient
             services.TryAddScoped<IOperationsStore>(s => new AzureTableOperationsStore(storageAccountConnectionString));
         }
 
+        public static void WithAzureTableDimensionsStore(this IServiceCollection services, string storageAccountConnectionString)
+        {
+            services.TryAddScoped<IDimensionStore>(s => new AzureTableDimensionUsageStore(storageAccountConnectionString));
+        }
+
         public static void WithOperationsStore<T>(this IServiceCollection services) where T : class, IOperationsStore
         {
             services.TryAddScoped<IOperationsStore, T>();

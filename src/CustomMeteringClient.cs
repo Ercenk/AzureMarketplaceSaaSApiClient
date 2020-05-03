@@ -17,25 +17,26 @@
 
     public class CustomMeteringClient : RestClient<CustomMeteringClient>, ICustomMeteringClient
     {
+        private readonly IDimensionStore dimensionsStore;
         public CustomMeteringClient(IOptionsMonitor<SecuredFulfillmentClientConfiguration> optionsMonitor,
-                                 ILogger<CustomMeteringClient> logger) : this(null,
-            optionsMonitor.CurrentValue,
-            logger)
+                                    IDimensionStore dimensionsStore,
+                                    ILogger<CustomMeteringClient> logger) : this(null, optionsMonitor.CurrentValue, dimensionsStore, logger)
         {
         }
 
         public CustomMeteringClient(SecuredFulfillmentClientConfiguration options,
-                                 ILogger<CustomMeteringClient> logger) : this(null,
-            options,
-            logger)
+                                   IDimensionStore dimensionsStore,
+                                   ILogger<CustomMeteringClient> logger) : this(null, options, dimensionsStore, logger)
         {
         }
 
         public CustomMeteringClient(
             HttpMessageHandler httpMessageHandler,
             SecuredFulfillmentClientConfiguration options,
+            IDimensionStore dimensionsStore,
             ILogger<CustomMeteringClient> logger) : base(options, logger, httpMessageHandler)
         {
+            this.dimensionsStore = dimensionsStore;
         }
 
         public async Task<CustomMeteringRequestResult> RecordBatchUsageAsync(Guid requestId, Guid correlationId, IEnumerable<Usage> usage, CancellationToken cancellationToken)
@@ -101,23 +102,30 @@
                                JsonConvert.SerializeObject(usage),
                                cancellationToken);
 
+            CustomMeteringRequestResult customMeteringRequestResult = null;
             switch (response.StatusCode)
             {
                 case HttpStatusCode.OK:
-                    return await AzureMarketplaceRequestResult.ParseAsync<CustomMeteringSuccessResult>(response);
-
+                    customMeteringRequestResult =  await AzureMarketplaceRequestResult.ParseAsync<CustomMeteringSuccessResult>(response);
+                    break;
                 case HttpStatusCode.Forbidden:
-                    return await AzureMarketplaceRequestResult.ParseAsync<CustomMeteringForbiddenResult>(response);
-
+                    customMeteringRequestResult = await AzureMarketplaceRequestResult.ParseAsync<CustomMeteringForbiddenResult>(response);
+                    break;
                 case HttpStatusCode.Conflict:
-                    return await AzureMarketplaceRequestResult.ParseAsync<CustomMeteringConflictResult>(response);
-
+                    customMeteringRequestResult =  await AzureMarketplaceRequestResult.ParseAsync<CustomMeteringConflictResult>(response);
+                    break;
                 case HttpStatusCode.BadRequest:
-                    return await AzureMarketplaceRequestResult.ParseAsync<CustomMeteringBadRequestResult>(response);
-
+                    customMeteringRequestResult = await AzureMarketplaceRequestResult.ParseAsync<CustomMeteringBadRequestResult>(response);
+                    break;
                 default:
                     throw new ApplicationException($"Unknown response from the API {await response.Content.ReadAsStringAsync()}");
             }
+
+            if (this.dimensionsStore != default)
+            {
+                await this.dimensionsStore.RecordAsync(customMeteringRequestResult.RequestResourceId, customMeteringRequestResult, cancellationToken);
+            }
+            return customMeteringRequestResult;
         }
     }
 }
