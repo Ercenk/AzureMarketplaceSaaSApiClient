@@ -16,8 +16,8 @@
     <PackageTags>Azure, Marketplace</PackageTags>
     <PackageReleaseNotes>Implemeted paging in get subscriptions</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <AssemblyVersion>3.5.1.0</AssemblyVersion>
-    <FileVersion>3.5.1.0</FileVersion>
+    <AssemblyVersion>3.5.2.0</AssemblyVersion>
+    <FileVersion>3.5.2.0</FileVersion>
     <ApplicationIcon />
     <OutputType>Library</OutputType>
     <StartupObject />

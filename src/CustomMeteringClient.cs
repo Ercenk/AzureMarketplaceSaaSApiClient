@@ -40,8 +40,10 @@
 
         public async Task<CustomMeteringRequestResult> RecordBatchUsageAsync(Guid requestId, Guid correlationId, IEnumerable<Usage> usage, CancellationToken cancellationToken)
         {
+            var adjustedBaseURI = this.baseUri;
+            adjustedBaseURI = adjustedBaseURI.Replace("saas", "");
             var requestUrl = FluentUriBuilder
-                .Start(this.baseUri)
+                .Start(adjustedBaseURI)
                 .AddPath("batchUsageEvent")
                 .AddQuery(DefaultApiVersionParameterName, this.apiVersion)
                 .Uri;
@@ -79,8 +81,10 @@
 
         public async Task<CustomMeteringRequestResult> RecordUsageAsync(Guid requestId, Guid correlationId, Usage usage, CancellationToken cancellationToken)
         {
+            var adjustedBaseURI = this.baseUri;
+            adjustedBaseURI = adjustedBaseURI.Replace("saas", "");
             var requestUrl = FluentUriBuilder
-                .Start(this.baseUri)
+                .Start(adjustedBaseURI)
                 .AddPath("usageEvent")
                 .AddQuery(DefaultApiVersionParameterName, this.apiVersion)
                 .Uri;
