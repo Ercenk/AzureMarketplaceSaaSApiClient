@@ -417,7 +417,14 @@ namespace SaaSFulfillmentClient
                                updateContent,
                                cancellationToken);
 
-            return await FulfillmentRequestResult.ParseAsync<UpdateOrDeleteSubscriptionRequestResult>(response);
+            var result = await FulfillmentRequestResult.ParseAsync<UpdateOrDeleteSubscriptionRequestResult>(response);
+
+            if (this.operationsStore != default)
+            {
+                await this.operationsStore.RecordAsync(subscriptionId, result, cancellationToken);
+            }
+
+            return result;
         }
     }
 }
