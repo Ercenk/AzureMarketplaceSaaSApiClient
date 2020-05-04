@@ -12,7 +12,6 @@
 
         public string Code { get; set; }
         public string RequestResourceId { get; set; }
-        public string RequestOfferId { get; set; }
         public string RequestPlanId { get; set; }
         public string RequestDimensionId { get; set; }
         public Double RequestQuantity { get; set; }

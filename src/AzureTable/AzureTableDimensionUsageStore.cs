@@ -7,7 +7,6 @@
     using System.Threading.Tasks;
 
     using Microsoft.Azure.Cosmos.Table;
-    using Microsoft.Azure.Cosmos.Table.Queryable;
 
     using SaaSFulfillmentClient.Models;
 
@@ -39,7 +38,17 @@
             {
                 var segment = await table.ExecuteQuerySegmentedAsync<DimensionUsageRecord>(
                                   query,
-                                  (key, rowKey, timestamp, properties, etag) => new DimensionUsageRecord(key, rowKey),
+                                  (key, rowKey, timestamp, properties, etag) => new DimensionUsageRecord(key, rowKey)
+                                  {
+                                      RequestResourceId = properties["RequestResourceId"].ToString(),
+                                      RequestPlanId = properties["RequestPlanId"].ToString(),
+                                      RequestDimensionId = properties["RequestDimensionId"].ToString(),
+                                      RequestQuantity = Convert.ToDouble(properties["RequestQuantity"].ToString()),
+                                      RequestSentTime = properties["RequestSentTime"].ToString(),
+                                      RequestUsageTime = properties["RequestUsageTime"].ToString(),
+                                      Code = properties["Code"].ToString(),
+                                      RawResponse = properties["RawResponse"].ToString()
+                                  },
                                   token,
                                   cancellationToken);
 
@@ -58,10 +67,9 @@
 
             await table.CreateIfNotExistsAsync(cancellationToken);
 
-            var entity = new DimensionUsageRecord(result.RequestResourceId, result.RequestSentTime.ToString())
+            var entity = new DimensionUsageRecord(result.RequestResourceId, result.RequestSentTime)
             {
                 RequestResourceId = result.RequestResourceId,
-                RequestOfferId = result.RequestOfferId,
                 RequestPlanId = result.RequestPlanId,
                 RequestDimensionId = result.RequestDimensionId,
                 RequestQuantity = result.RequestQuantity,

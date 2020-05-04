@@ -121,8 +121,14 @@
                     throw new ApplicationException($"Unknown response from the API {await response.Content.ReadAsStringAsync()}");
             }
 
-            if (this.dimensionsStore != default)
+            if (this.dimensionsStore != default && customMeteringRequestResult != null)
             {
+                customMeteringRequestResult.RequestResourceId = usage.ResourceId;
+                customMeteringRequestResult.RequestPlanId = usage.PlanId;
+                customMeteringRequestResult.RequestDimensionId = usage.Dimension;
+                customMeteringRequestResult.RequestQuantity = usage.Quantity;
+                customMeteringRequestResult.RequestSentTime = DateTime.Now.ToString("yyyymmddhhmmss");
+                customMeteringRequestResult.RequestUsageTime = usage.EffectiveStartTime;
                 await this.dimensionsStore.RecordAsync(customMeteringRequestResult.RequestResourceId, customMeteringRequestResult, cancellationToken);
             }
             return customMeteringRequestResult;
