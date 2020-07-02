@@ -9,7 +9,7 @@ namespace SaaSFulfillmentClient.AzureAD
         private const string authenticationEndpoint = "https://login.microsoftonline.com/";
 
         // Please see https://docs.microsoft.com/en-us/azure/marketplace/partner-center-portal/pc-saas-registration#get-a-token-based-on-the-azure-ad-app
-        private const string marketplaceResourceId = "62d94f6c-d599-489b-a797-3e10e42fbe22";
+        private const string marketplaceResourceId = "20e940b3-4c77-4b0b-9a53-9e16a1b010a7";
 
         public static async Task<string> GetAccessToken(SecuredFulfillmentClientConfiguration options)
         {
