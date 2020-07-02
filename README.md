@@ -1,3 +1,5 @@
+![.NET Core](https://github.com/Ercenk/AzureMarketplaceSaaSApiClient/workflows/.NET%20Core/badge.svg)
+
 # Azure Marketplace SaaS Fulfillment API Client
 
 **This is an experimental .NET client implementation for the Azure Marketplace SaaS Fulfillment API V2 for me to learn how to use it. I make frequent changes to this repo as I discover new things with the marketplace API. Please check back often.**
