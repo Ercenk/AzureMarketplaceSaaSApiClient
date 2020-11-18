@@ -2,6 +2,8 @@
 
 # Azure Marketplace SaaS Fulfillment API Client
 
+**I no longer maintain this library. Please use the new librar in preview here, https://github.com/Ercenk/AzureMarketplaceSaaSApiClient**
+
 **This is an experimental .NET client implementation for the Azure Marketplace SaaS Fulfillment API V2 for me to learn how to use it. I make frequent changes to this repo as I discover new things with the marketplace API. Please check back often.**
 
 I built this project as a part of a sample I am developing for demonstrating how SaaS applications can be integrated with Azure Marketplace.
