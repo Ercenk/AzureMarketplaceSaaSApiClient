@@ -55,7 +55,7 @@
                                requestId,
                                correlationId,
                                null,
-                               JsonConvert.SerializeObject(usage),
+                               JsonConvert.SerializeObject(new BatchUsage(){Request = usage}),
                                cancellationToken);
 
             switch (response.StatusCode)
