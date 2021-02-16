@@ -17,31 +17,34 @@
 
     public class CustomMeteringClient : RestClient<CustomMeteringClient>, ICustomMeteringClient
     {
+        private readonly IDimensionStore dimensionsStore;
         public CustomMeteringClient(IOptionsMonitor<SecuredFulfillmentClientConfiguration> optionsMonitor,
-                                 ILogger<CustomMeteringClient> logger) : this(null,
-            optionsMonitor.CurrentValue,
-            logger)
+                                    IDimensionStore dimensionsStore,
+                                    ILogger<CustomMeteringClient> logger) : this(null, optionsMonitor.CurrentValue, dimensionsStore, logger)
         {
         }
 
         public CustomMeteringClient(SecuredFulfillmentClientConfiguration options,
-                                 ILogger<CustomMeteringClient> logger) : this(null,
-            options,
-            logger)
+                                   IDimensionStore dimensionsStore,
+                                   ILogger<CustomMeteringClient> logger) : this(null, options, dimensionsStore, logger)
         {
         }
 
         public CustomMeteringClient(
             HttpMessageHandler httpMessageHandler,
             SecuredFulfillmentClientConfiguration options,
+            IDimensionStore dimensionsStore,
             ILogger<CustomMeteringClient> logger) : base(options, logger, httpMessageHandler)
         {
+            this.dimensionsStore = dimensionsStore;
         }
 
         public async Task<CustomMeteringRequestResult> RecordBatchUsageAsync(Guid requestId, Guid correlationId, IEnumerable<Usage> usage, CancellationToken cancellationToken)
         {
+            var adjustedBaseURI = this.baseUri;
+            adjustedBaseURI = adjustedBaseURI.Replace("saas", "");
             var requestUrl = FluentUriBuilder
-                .Start(this.baseUri)
+                .Start(adjustedBaseURI)
                 .AddPath("batchUsageEvent")
                 .AddQuery(DefaultApiVersionParameterName, this.apiVersion)
                 .Uri;
@@ -79,8 +82,10 @@
 
         public async Task<CustomMeteringRequestResult> RecordUsageAsync(Guid requestId, Guid correlationId, Usage usage, CancellationToken cancellationToken)
         {
+            var adjustedBaseURI = this.baseUri;
+            adjustedBaseURI = adjustedBaseURI.Replace("saas", "");
             var requestUrl = FluentUriBuilder
-                .Start(this.baseUri)
+                .Start(adjustedBaseURI)
                 .AddPath("usageEvent")
                 .AddQuery(DefaultApiVersionParameterName, this.apiVersion)
                 .Uri;
@@ -97,23 +102,36 @@
                                JsonConvert.SerializeObject(usage),
                                cancellationToken);
 
+            CustomMeteringRequestResult customMeteringRequestResult = null;
             switch (response.StatusCode)
             {
                 case HttpStatusCode.OK:
-                    return await AzureMarketplaceRequestResult.ParseAsync<CustomMeteringSuccessResult>(response);
-
+                    customMeteringRequestResult =  await AzureMarketplaceRequestResult.ParseAsync<CustomMeteringSuccessResult>(response);
+                    break;
                 case HttpStatusCode.Forbidden:
-                    return await AzureMarketplaceRequestResult.ParseAsync<CustomMeteringForbiddenResult>(response);
-
+                    customMeteringRequestResult = await AzureMarketplaceRequestResult.ParseAsync<CustomMeteringForbiddenResult>(response);
+                    break;
                 case HttpStatusCode.Conflict:
-                    return await AzureMarketplaceRequestResult.ParseAsync<CustomMeteringConflictResult>(response);
-
+                    customMeteringRequestResult =  await AzureMarketplaceRequestResult.ParseAsync<CustomMeteringConflictResult>(response);
+                    break;
                 case HttpStatusCode.BadRequest:
-                    return await AzureMarketplaceRequestResult.ParseAsync<CustomMeteringBadRequestResult>(response);
-
+                    customMeteringRequestResult = await AzureMarketplaceRequestResult.ParseAsync<CustomMeteringBadRequestResult>(response);
+                    break;
                 default:
                     throw new ApplicationException($"Unknown response from the API {await response.Content.ReadAsStringAsync()}");
             }
+
+            if (this.dimensionsStore != default && customMeteringRequestResult != null)
+            {
+                customMeteringRequestResult.RequestResourceId = usage.ResourceId;
+                customMeteringRequestResult.RequestPlanId = usage.PlanId;
+                customMeteringRequestResult.RequestDimensionId = usage.Dimension;
+                customMeteringRequestResult.RequestQuantity = usage.Quantity;
+                customMeteringRequestResult.RequestSentTime = DateTime.Now.ToString("yyyymmddhhmmss");
+                customMeteringRequestResult.RequestUsageTime = usage.EffectiveStartTime;
+                await this.dimensionsStore.RecordAsync(customMeteringRequestResult.RequestResourceId, customMeteringRequestResult, cancellationToken);
+            }
+            return customMeteringRequestResult;
         }
     }
 }

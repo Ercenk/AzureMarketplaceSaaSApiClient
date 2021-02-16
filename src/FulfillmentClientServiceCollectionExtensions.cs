@@ -38,9 +38,20 @@ namespace SaaSFulfillmentClient
             return services;
         }
 
+        public static IServiceCollection AddCustomeMeterProcessor(this IServiceCollection services)
+        {
+            services.TryAddScoped<ICustomMeteringClient, CustomMeteringClient>();
+            return services;
+        }
+
         public static void WithAzureTableOperationsStore(this IServiceCollection services, string storageAccountConnectionString)
         {
             services.TryAddScoped<IOperationsStore>(s => new AzureTableOperationsStore(storageAccountConnectionString));
+        }
+
+        public static void WithAzureTableDimensionsStore(this IServiceCollection services, string storageAccountConnectionString)
+        {
+            services.TryAddScoped<IDimensionStore>(s => new AzureTableDimensionUsageStore(storageAccountConnectionString));
         }
 
         public static void WithOperationsStore<T>(this IServiceCollection services) where T : class, IOperationsStore
